@@ -1,0 +1,7 @@
+{
+    "main": "random.js",
+    "dependencies": {
+        "request": "latest",
+        "urban": "^0.3.0"
+    }
+}

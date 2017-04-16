@@ -1,0 +1,7 @@
+{
+  "global": {
+    "eval": false,
+    "setUsername": false
+  },
+  "users": {}
+}
