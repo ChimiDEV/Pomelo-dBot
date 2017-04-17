@@ -1,7 +1,13 @@
 {
   "global": {
     "eval": false,
+    "setGame": false,
     "setUsername": false
   },
-  "users": {}
+  "users": {
+    "124600702084317184": {
+      "eval": true,
+      "setGame": true
+    }
+  }
 }

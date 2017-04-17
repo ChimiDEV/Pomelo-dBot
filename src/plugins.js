@@ -6,7 +6,7 @@ function getDirectories(srcpath) {
         .filter(file => fs.statSync(path.join(srcpath, file)).isDirectory())
 }
 
-function createNpmDependenciesArray (packageFilePath) {
+function createNpmDependenciesArray(packageFilePath) {
     var p = require(packageFilePath);
     if (!p.dependencies) return [];
     var deps = [];
@@ -20,23 +20,23 @@ function createNpmDependenciesArray (packageFilePath) {
 function preloadPlugins() {
     var deps = [];
     var npm = require("npm");
-    
+
     for (var i = 0; i < pluginFolders.length; i++) {
-        try{
+        try {
             require(pluginDirectory + pluginFolders[i]);
-        } catch(e) {
+        } catch (e) {
             deps = deps.concat(createNpmDependenciesArray(pluginDirectory + pluginFolders[i] + "/package.json"));
         }
     }
-    
-    if(deps.length > 0) {
+
+    if (deps.length > 0) {
         npm.load({
             loaded: false
-        }, function (err) {
+        }, function(err) {
             // catch errors
 
-            npm.commands.install(deps, function (er, data) {
-                if(er){
+            npm.commands.install(deps, function(er, data) {
+                if (er) {
                     console.log(er);
                 }
                 console.log("Plugin preload complete");
@@ -54,9 +54,9 @@ function preloadPlugins() {
 
 function loadPlugins() {
     var dbot = require("./discordBot.js");
+    var commandCount = 0;
     for (var i = 0; i < pluginFolders.length; i++) {
         var plugin;
-        var commandCount = 0;
         try {
             plugin = require(pluginDirectory + pluginFolders[i]);
         } catch (e) {
@@ -73,8 +73,8 @@ function loadPlugins() {
                 }
             }
         }
-        console.log("Loaded " + commandCount + " chat commands")
     }
+    console.log("Loaded " + commandCount + " chat commands")
 }
 
 var pluginFolders;
@@ -86,6 +86,6 @@ try {
     console.log(e.stack);
 }
 
-exports.init = function () {
+exports.init = function() {
     preloadPlugins();
 }

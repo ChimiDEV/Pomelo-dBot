@@ -1,0 +1,6 @@
+{
+    "main": "sound.js",
+    "dependencies": {
+        "youtube-dl": "^1.11.1"
+    }
+}

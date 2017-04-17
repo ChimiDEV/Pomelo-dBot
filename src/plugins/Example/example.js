@@ -1,6 +1,6 @@
 /* Command: XYZ */
 exports.test = {
-    description: "Test Command",
+    description: 'Test Command',
     process: testFunction
 }
 
@@ -10,5 +10,5 @@ function testFunction(bot, msg, suffix) {
 /* --- */
 
 exports.commands = [
-    "test"
+    'test'
 ];

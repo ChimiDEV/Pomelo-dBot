@@ -1,0 +1,6 @@
+{
+    "main": "twitch.js",
+    "dependencies": {
+        "twitch-api": "^0.4.6"
+    }
+}

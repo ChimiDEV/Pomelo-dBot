@@ -1,0 +1,6 @@
+{
+    "main": "wiki.js",
+    "dependencies": {
+        "wikijs": "^3.0.1"
+    }
+}
