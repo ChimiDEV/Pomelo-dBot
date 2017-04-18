@@ -1,5 +1,6 @@
 const AuthDetails = require('../../auth.json');
-var twitchApi = require('twitch-api');
+const twitchApi = require('twitch-api');
+const qs = require('querystring');
 
 var twitch = new twitchApi({
     clientId: AuthDetails.twitch_client_id,
@@ -8,11 +9,28 @@ var twitch = new twitchApi({
 });
 
 exports.notifier = function(bot) {
-    var notifyChannel = bot.channels.find("name", "test")
+    var notifyChannel = bot.channels.find("name", "test");
 
-    console.log(twitch.getTopGames());
+    twitch.getStreams ({game: "Counter-Strike: Global Offensive", limit: 1}, (err, res) => {
+        var stream = res.streams[0].channel
+        var streamTitle = stream.status;
+        var streamGame = stream.game;
+        var streamLang = stream.language.toUpperCase();
+        var streamViewers = stream.views;
+        var streamUser = stream.display_name;
+        var streamUrl = stream.url;
 
-    setInterval(() => {
+        var msgTxt = "_" + streamGame + "_\n" +
+                    "**[" + streamLang + "] " + streamTitle + "** \n" +
+                    "Viewer: " + streamViewers + "\n" +
+                    "Streamer: " + streamUser + "\n" +
+                    streamUrl;
+
+
+        console.log(msgTxt);
+    });
+
+    /* setInterval(() => {
         notifyChannel.sendMessage("test");
-    }, 1000 * 20)
+    }, 1000 * 20) */
 }

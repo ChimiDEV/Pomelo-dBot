@@ -13,6 +13,7 @@
         "discord.js": "^11.0.0",
         "request": "^2.81.0",
         "node-opus": "^0.2.6",
-        "opusscript": "^0.0.3"
+        "opusscript": "^0.0.3",
+        "twitch-api": "^0.4.6"
     }
 }

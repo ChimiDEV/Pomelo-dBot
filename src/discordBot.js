@@ -27,7 +27,7 @@ try {
 }
 
 // Load custom permissions
-var dangerousCommands = ['eval', 'setUsername'];
+var dangerousCommands = ['eval'];
 var Permissions = {};
 
 try {
@@ -35,13 +35,17 @@ try {
 } catch (e) {
     Permissions.global = {};
     Permissions.users = {};
-}
 
-for (var i = 0; i < dangerousCommands.length; i++) {
-    var cmd = dangerousCommands[i];
-    if (!Permissions.global.hasOwnProperty(cmd)) {
-        Permissions.global[cmd] = false;
+    for (var i = 0; i < dangerousCommands.length; i++) {
+        var cmd = dangerousCommands[i];
+        if (!Permissions.global.hasOwnProperty(cmd)) {
+            Permissions.global[cmd] = false;
+        }
     }
+
+    fs.writeFile('./permissions.json', JSON.stringify(Permissions, null, 2), () => {
+        console.log('Wrote new Permission File');
+    });
 }
 
 Permissions.checkPermission = function(user, permission) {
@@ -52,22 +56,24 @@ Permissions.checkPermission = function(user, permission) {
             if (Permissions.global.hasOwnProperty(permission)) {
                 allowed = Permissions.global[permission] === true;
             }
-        } catch (e) {}
+        } catch (err) {
+            console.log(err);
+        }
 
         try {
             if (Permissions.users[user.id].hasOwnProperty(permission)) {
                 allowed = Permissions.users[user.id][permission] === true;
             }
-        } catch (e) {}
+        } catch (err) {
+            console.log(err);
+        }
 
         return allowed;
-    } catch (e) {}
+    } catch (err) {
+        console.log(err);
+    }
     return false;
 }
-
-fs.writeFile('./permissions.json', JSON.stringify(Permissions, null, 2), function() {
-    console.log('Wrote Permission File');
-});
 
 // Load Config Data
 var Config = {};
@@ -92,7 +98,7 @@ if (!Config.hasOwnProperty('commandPrefix')) {
 
 var commands = {
     'ping': {
-        description: 'responds pong, useful for checking if bot is alive.',
+        description: 'Responds pong, useful for checking if bot is alive.',
         process: function(bot, msg, suffix) {
             msg.channel.sendMessage(msg.author + ' pong!');
             if (suffix) {
@@ -101,7 +107,7 @@ var commands = {
         }
     },
     'pong': {
-        description: 'responds to Pakku, because only he is that stupid.',
+        description: 'Responds to Pakku, because only he is that stupid.',
         process: function(bot, msg, suffix) {
             msg.channel.sendMessage(msg.author + ' Idiot.');
         }
@@ -118,7 +124,6 @@ function checkMessageForCommands(msg, isEdit) {
             try {
                 cmdTxt = msg.content.split(' ')[1];
                 suffix = msg.content.substring(bot.user.mention().length + cmdTxt.length + Config.commandPrefix.length + 1);
-                console.log(suffix);
             } catch (e) {
                 msg.channel.sendMessage('Yes?');
                 return;
@@ -129,6 +134,7 @@ function checkMessageForCommands(msg, isEdit) {
         if (cmdTxt === 'help') {
             // Help is special since it iterates over the other commands
             if (suffix) {
+                // give help for given arguments
                 var cmds = suffix.split(' ').filter(function(cmd) {
                     return commands[cmd]
                 });
@@ -157,6 +163,7 @@ function checkMessageForCommands(msg, isEdit) {
                 }
                 msg.channel.sendMessage(info);
             } else {
+                // Give help to all commands
                 msg.author.sendMessage('**Available Commands:**').then(function() {
                     var batch = '';
                     var sortedCommands = Object.keys(commands).sort();
@@ -195,14 +202,15 @@ function checkMessageForCommands(msg, isEdit) {
         } else if (cmd) {
             if (Permissions.checkPermission(msg.author, cmdTxt)) {
                 try {
+                    // Execute Command
                     cmd.process(bot, msg, suffix, isEdit);
                 } catch (e) {
                     var msgText = 'command ' + cmdTxt + ' failed.'
                     if (Config.debug) {
                         msgTxt = '\n' + e.stack;
                     }
-                    msg.channel.sendMessage(msgText);
                     console.log(e.stack);
+                    msg.channel.sendMessage(msgText);
                 }
             } else {
                 msg.channel.sendMessage('You are not allowed to run ' + cmdTxt + '!');
@@ -220,11 +228,13 @@ function checkMessageForCommands(msg, isEdit) {
 // Initialize Bot and set Eventlistener
 var bot = new Discord.Client();
 
-bot.on('ready', function() {
+bot.on('ready', () => {
     console.log('Logged in! Serving in ' + bot.guilds.array().length + ' servers');
-    require('./plugins.js').init();
+    //require('./plugins.js').init();
     console.log('type ' + Config.commandPrefix + 'help in Discord for Commandlist.');
     bot.user.setGame('Chill fam.');
+
+    // Start non-interactive functions (no need for a command)
     twitchNotifier.notifier(bot);
 });
 
