@@ -1,5 +1,5 @@
-var request = require('request');
-var urbanApi = require('urban');
+const request = require('request');
+const urbanApi = require('urban');
 
 /* Command: Random Math Fact */
 exports.mathFact = {
@@ -8,7 +8,7 @@ exports.mathFact = {
 }
 
 function mathFactFunction(bot, msg, suffix) {
-    request('http://numbersapi.com/random/math?json', function(err, res, body) {
+    request('http://numbersapi.com/random/math?json', (err, res, body) => {
         var data = JSON.parse(body);
         if (data && data.text) {
             msg.channel.sendMessage(data.text)
@@ -26,7 +26,7 @@ exports.urban = {
 
 function urbanFunction(bot, msg, suffix) {
     var targetWord = suffix == '' ? urbanApi.random() : urbanApi(suffix);
-    targetWord.first(function(json) {
+    targetWord.first(json => {
         if (json) {
             var message = 'Urban Dictionary: **' + json.word + '**\n\n' + json.definition;
             if (json.example) {

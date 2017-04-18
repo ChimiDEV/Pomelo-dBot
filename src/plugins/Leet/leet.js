@@ -1,4 +1,4 @@
-var leet = require('leet');
+const leet = require('leet');
 
 /* Command: Leet */
 exports.leet = {

@@ -1,7 +1,7 @@
-var AuthDetails = require('../../auth.json');
-var Imgflipper = require('imgflipper');
+const AuthDetails = require('../../auth.json');
+const Imgflipper = require('imgflipper');
 
-var meme = {
+const meme = {
     "onedoesnot": 61579,
     "batslap": 438680,
     "idontalways": 61532,
@@ -48,7 +48,7 @@ function memeGenerator(bot, msg, suffix) {
 
     var imgflipper = new Imgflipper(AuthDetails.imgflip_username, AuthDetails.imgflip_password);
 
-    imgflipper.generateMeme(meme[memeType], memeText[1] ? memeText[1] : '', memeText[3] ? memeText[3] : '', function(err, img) {
+    imgflipper.generateMeme(meme[memeType], memeText[1] ? memeText[1] : '', memeText[3] ? memeText[3] : '', (err, img) => {
         if (img) {
             msg.channel.sendMessage(img);
         } else {

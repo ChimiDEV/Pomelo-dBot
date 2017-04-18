@@ -1,10 +1,11 @@
-var request = require('request');
-var AuthDetails = require('../../auth.json');
+const request = require('request');
+const AuthDetails = require('../../auth.json');
+
 try {
-    var yt = require("./youtubePlugin");
-    var youtubePlugin = new yt();
+    const yt = require("./youtubePlugin");
+    const youtubePlugin = new yt();
 } catch (e) {
-    console.log('couldn\'t load youtube plugin!\n' + e.stack);
+    console.log('Couldn\'t load youtube plugin!\n' + e.stack);
 }
 
 /* Command: Image */
@@ -23,13 +24,14 @@ function googleImage(bot, msg, suffix) {
     var page = 1;
     request("https://www.googleapis.com/customsearch/v1?key=" + AuthDetails.youtube_api_key + "&cx=" + AuthDetails.google_custom_search +
         "&q=" + (suffix.replace(/\s/g, '+')) + "&searchType=image&alt=json&num=10&start=" + page,
-        function(err, res, body) {
+        (err, res, body) => {
             var data;
             try {
                 data = JSON.parse(body);
             } catch (e) {
                 console.log(e);
             }
+
             if (!data) {
                 msg.channel.sendMessage("Error: " + JSON.stringify(data));
                 return;
@@ -59,7 +61,7 @@ function googleRandomImage(bot, msg, suffix) {
     var page = 1 + Math.floor(Math.random() * 5) * 10; // Request 10 items
     request("https://www.googleapis.com/customsearch/v1?key=" + AuthDetails.youtube_api_key + "&cx=" + AuthDetails.google_custom_search +
         "&q=" + (suffix.replace(/\s/g, '+')) + "&searchType=image&alt=json&num=10&start=" + page,
-        function(err, res, body) {
+        (err, res, body) => {
             var data;
             try {
                 data = JSON.parse(body);
@@ -83,7 +85,7 @@ function googleRandomImage(bot, msg, suffix) {
 /* Command: Random Google Gif */
 exports.rGif = {
     usage: '<Search Tags>',
-    description: 'Gets a random matching gif from Google',
+    description: 'Gets a random matching GIF from Google',
     process: googleRandomGif
 }
 
@@ -91,7 +93,7 @@ function googleRandomGif(bot, msg, suffix) {
     var page = 1 + Math.floor(Math.random() * 5) * 10;
     request("https://www.googleapis.com/customsearch/v1?key=" + AuthDetails.youtube_api_key + "&cx=" + AuthDetails.google_custom_search +
         "&q=" + (suffix.replace(/\s/g, '+')) + "&searchType=image&alt=json&num=10&start=" + page + "&fileType=gif",
-        function(err, res, body) {
+        (err, res, body) => {
             var data;
             try {
                 data = JSON.parse(body);

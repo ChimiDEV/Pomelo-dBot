@@ -1,7 +1,7 @@
-var request = require('request');
-var youtubedl = require('youtube-dl');
+const request = require('request');
+const youtubedl = require('youtube-dl');
 
-var sound = {
+const sound = {
     "bitchdab": "https://www.youtube.com/watch?v=SCQXlKXBgU8",
     "boom": "https://www.youtube.com/watch?v=Ag6Cm7w5ICU",
     "choppa": "https://www.youtube.com/watch?v=umBzgEDIJ5E",
@@ -55,7 +55,8 @@ exports.play = {
 
 function playSound(bot, msg, suffix) {
     if (!(suffix.toLowerCase().startsWith('http')) || !(suffix.toLowerCase().startsWith('https'))) {
-        msg.channel.sendMessage("No Youtube link defined.")
+        msg.channel.sendMessage("No Youtube link defined.");
+        return;
     }
 
     // Join the voice channel if not already in one.
@@ -82,15 +83,14 @@ function playSound(bot, msg, suffix) {
         const dispatcher = connection.playStream(video);
         connection.player.dispatcher.setVolume(0.1);
 
-
-        dispatcher.on('debug', (i) => console.log("debug: " + i));
-        dispatcher.on('error', console.error);
+        dispatcher.on('error', err => {
+            console.log(err)
+        });
         dispatcher.on("end", end => {
             // Leave the voice channel.
-            const voiceConnection = bot.voiceConnections.get(msg.guild.id);
-            if (voiceConnection != null) {
-                voiceConnection.player.dispatcher.end();
-                voiceConnection.channel.leave();
+            if (connection != null) {
+                connection.player.dispatcher.end();
+                connection.channel.leave();
                 return;
             }
         });
@@ -116,7 +116,8 @@ exports.sound = {
 
 function soundBoard(bot, msg, suffix) {
     var soundType = suffix != "" ? suffix : null;
-    if(!soundType) {
+    if (!soundType) {
+        msg.channel.sendMessage("No sound defined");
         return;
     }
     // Join the voice channel if not already in one.
@@ -145,10 +146,9 @@ function soundBoard(bot, msg, suffix) {
 
         dispatcher.on("end", end => {
             // Leave the voice channel.
-            const voiceConnection = bot.voiceConnections.get(msg.guild.id);
-            if (voiceConnection != null) {
-                voiceConnection.player.dispatcher.end();
-                voiceConnection.channel.leave();
+            if (connection != null) {
+                connection.player.dispatcher.end();
+                connection.channel.leave();
                 return;
             }
         });

@@ -1,4 +1,4 @@
-var request = require('request');
+const request = require('request');
 
 /* Command: Source Code */
 exports.src = {
@@ -13,7 +13,7 @@ function srcFunction(bot, msg, suffix) {
             'User-Agent': 'node.js'
         }
     }
-    request(options, function(err, res, body) {
+    request(options, (err, res, body) => {
         var repo = JSON.parse(body);
         if (repo) {
             var msgTxt = "_Pomelo Discord Bot_ by **" + repo.owner.login + "** \n" +

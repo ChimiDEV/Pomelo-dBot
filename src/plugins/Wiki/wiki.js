@@ -1,4 +1,4 @@
-var Wiki = require('wikijs').default;
+const Wiki = require('wikijs').default;
 
 /* Command: Wiki */
 exports.wiki = {
@@ -14,23 +14,29 @@ function wikiSearch(bot, msg, suffix) {
         return;
     }
 
-    Wiki().search(query, 1).then(function(data) {
-        Wiki().page(data.results[0]).then(function(page) {
-            page.summary().then(function(summary) {
-                var sumText = summary.toString().split('\n');
-                var continuation = function() {
-                    var paragraph = sumText.shift();
-                    if (paragraph) {
-                        msg.channel.sendMessage(paragraph, continuation);
-                    }
-                };
-                continuation();
+    Wiki().search(query, 1).then(data => {
+            Wiki().page(data.results[0]).then(page => {
+                page.summary().then(summary => {
+                    var sumText = summary.toString().split('\n');
+                    continuation(sumText, msg);
+                }, errSummary => {
+                    console.log(errSummary);
+                });
+            }, errPage => {
+                console.log(errPage);
             });
-        });
-    }, function(err) {
-        msg.channel.sendMessage(err);
+        }, errSearch => {
+            console.log(errSearch)
+        }
     });
 }
+
+function continuation (sumText, msg) {
+    var paragraph = sumText.shift();
+    if (paragraph) {
+        msg.channel.sendMessage(paragraph, continuation);
+    }
+};
 /* --- */
 
 exports.commands = [

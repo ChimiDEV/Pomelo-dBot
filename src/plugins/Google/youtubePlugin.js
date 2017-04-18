@@ -1,6 +1,6 @@
-var util = require('util');
-var youtubeNode = require('youtube-node');
-var AuthDetails = require("../../auth.json");
+const util = require('util');
+const youtubeNode = require('youtube-node');
+const AuthDetails = require("../../auth.json");
 
 
 function YoutubePlugin() {
@@ -12,9 +12,10 @@ function YoutubePlugin() {
 
 
 YoutubePlugin.prototype.respond = function(query, channel, bot) {
-    this.youtube.search(query, 1, function(error, result) {
-        if (error) {
+    this.youtube.search(query, 1, (err, result) => {
+        if (err) {
             channel.sendMessage("¯\\_(ツ)_/¯");
+            console.log(err);
         } else {
             if (!result || !result.items || result.items.length < 1) {
                 channel.sendMessage(YoutubePlugin.RickrollUrl);
