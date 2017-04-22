@@ -83,6 +83,7 @@ try {
 } catch (e) {
     Config.debug = false;
     Config.commandPrefix = '!';
+    Config.twitchNotify = [];
     try {
         if (fs.lstatSync('./config.json').isFile()) {
             console.log('WARNING: config.json found but we couldn\'t read it!\n' + e.stack);

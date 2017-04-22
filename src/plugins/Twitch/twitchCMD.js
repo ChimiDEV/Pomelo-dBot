@@ -45,7 +45,9 @@ function twitchFunction(bot, msg, suffix) {
             twitchTopGames(msg)
             break;
         case "game":
-            twitchGame(msg)
+            twitchGame(msg, args)
+            break;
+        case "esports":
             break;
         default:
             return;
@@ -77,8 +79,37 @@ function twitchTopGames(msg) {
     });
 }
 
-function twitchGame(msg) {
-    twitch
+function twitchGame(msg, game) {
+    if(!game) {
+        msg.channels.sendMessage("No Game given");
+        return;
+    }
+    
+    twitch.getStreams({
+        game: game,
+        limit: 1
+    }, (err, res) => {
+        if (err) {
+            console.log(err);
+            return;
+        }
+        var stream = res.streams[0].channel
+        var streamTitle = stream.status;
+        var streamGame = stream.game;
+        var streamLang = stream.language.toUpperCase();
+        var streamViewers = stream.views;
+        var streamUser = stream.display_name;
+        var streamUrl = stream.url;
+
+        var msgTxt = "_" + streamGame + "_\n" +
+            "**[" + streamLang + "] " + streamTitle + "** \n" +
+            "Viewer: " + streamViewers + "\n" +
+            "Streamer: " + streamUser + "\n" +
+            streamUrl;
+
+
+        console.log(msgTxt);
+    });
 }
 
 exports.commands = [

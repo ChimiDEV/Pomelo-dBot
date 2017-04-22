@@ -1,4 +1,8 @@
 {
     "debug": true,
-    "commandPrefix": "!"
+    "commandPrefix": "!",
+    "twitchNotify": [
+        "esl_csgo",
+        "esl_csg0"
+    ]
 }

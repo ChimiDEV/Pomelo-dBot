@@ -1,19 +1,20 @@
 {
-    "name": "discord-bot",
-    "version": "0.0.1",
-    "description": "simple discord bot",
-    "main": "discordBot.js",
-    "scripts": {
-        "start": "node discordBot.js"
-    },
-    "author": "Tim Walter",
-    "license": "MIT",
-    "dependencies": {
-        "npm": "latest",
-        "discord.js": "^11.0.0",
-        "request": "^2.81.0",
-        "node-opus": "^0.2.6",
-        "opusscript": "^0.0.3",
-        "twitch-api": "^0.4.6"
-    }
+  "name": "discord-bot",
+  "version": "0.0.1",
+  "description": "simple discord bot",
+  "main": "discordBot.js",
+  "scripts": {
+    "start": "node discordBot.js"
+  },
+  "author": "Tim Walter",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^11.0.0",
+    "lodash": "^4.17.4",
+    "node-opus": "^0.2.6",
+    "npm": "latest",
+    "opusscript": "^0.0.3",
+    "request": "^2.81.0",
+    "twitch-api": "^0.4.6"
+  }
 }
