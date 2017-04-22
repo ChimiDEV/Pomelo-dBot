@@ -15,23 +15,22 @@ function wikiSearch(bot, msg, suffix) {
     }
 
     Wiki().search(query, 1).then(data => {
-            Wiki().page(data.results[0]).then(page => {
-                page.summary().then(summary => {
-                    var sumText = summary.toString().split('\n');
-                    continuation(sumText, msg);
-                }, errSummary => {
-                    console.log(errSummary);
-                });
-            }, errPage => {
-                console.log(errPage);
+        Wiki().page(data.results[0]).then(page => {
+            page.summary().then(summary => {
+                var sumText = summary.toString().split('\n');
+                continuation(sumText, msg);
+            }, errSummary => {
+                console.log(errSummary);
             });
-        }, errSearch => {
-            console.log(errSearch)
-        }
+        }, errPage => {
+            console.log(errPage);
+        });
+    }, errSearch => {
+        console.log(errSearch)
     });
 }
 
-function continuation (sumText, msg) {
+function continuation(sumText, msg) {
     var paragraph = sumText.shift();
     if (paragraph) {
         msg.channel.sendMessage(paragraph, continuation);

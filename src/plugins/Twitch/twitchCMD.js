@@ -1,4 +1,5 @@
 const twitchApi = require('twitch-api');
+const AuthDetails = require('../../auth.json');
 
 var twitch = new twitchApi({
     clientId: AuthDetails.twitch_client_id,
@@ -7,7 +8,7 @@ var twitch = new twitchApi({
 });
 
 const twitchCmd = [
-    'topGames'
+    'topGames',
     'game'
 ]
 
@@ -21,7 +22,7 @@ exports.twitch = {
     description: function() {
         var str = 'Available Commands:\n'
         for (var c in twitchCmd) {
-            str += '\t\t' + c + '\n'
+            str += '\t\t' + twitchCmd[c] + '\n'
         }
         return str;
     },
@@ -30,13 +31,12 @@ exports.twitch = {
 
 function twitchFunction(bot, msg, suffix) {
     var args = msg.content.split('"')[1];
-    var cmd = string.split(' ')[1];
+    var cmd = msg.content.split(' ')[1];
 
-    cmd = twitchCmd[cmd];
     args = gameAlias[args] ? gameAlias[args] : args;
 
     if (!cmd) {
-        msg.channels.sendMessage('Missing or invalid twitch command');
+        msg.channel.sendMessage('Missing twitch command');
         return;
     }
 
@@ -50,6 +50,7 @@ function twitchFunction(bot, msg, suffix) {
         case "esports":
             break;
         default:
+            msg.channel.sendMessage('Invalid twitch command');
             return;
     }
 }
@@ -64,7 +65,7 @@ function twitchTopGames(msg) {
             return;
         }
         var topGame = res.top;
-        var msgText = ""
+        var msgTxt = ""
 
         for (var g in topGame) {
             var gameName = topGame[g].game.name;
@@ -72,19 +73,23 @@ function twitchTopGames(msg) {
             var gameUrl = "https://www.twitch.tv/directory/game/" + encodeURI(gameName);
             var rank = parseInt(g) + 1;
 
-            msgText += rank + ". **" + gameName + "** with " + gameViewers + " Viewers\n" +
+            msgTxt += rank + ". **" + gameName + "** with " + gameViewers + " Viewers\n" +
                 gameUrl + "\n";
         }
-        notifyChannel.sendMessage(msgText);
+
+        if(msgTxt.length < 1) {
+            msgTxt = "No top Games found."
+        }
+        msg.channel.sendMessage(msgTxt);
     });
 }
 
 function twitchGame(msg, game) {
     if(!game) {
-        msg.channels.sendMessage("No Game given");
+        msg.channel.sendMessage("No Game given");
         return;
     }
-    
+
     twitch.getStreams({
         game: game,
         limit: 1
@@ -107,8 +112,7 @@ function twitchGame(msg, game) {
             "Streamer: " + streamUser + "\n" +
             streamUrl;
 
-
-        console.log(msgTxt);
+        msg.channel.sendMessage(msgTxt)
     });
 }
 

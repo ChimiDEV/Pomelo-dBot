@@ -46,7 +46,7 @@ function getGif(tags, callback) {
         query += "&tag=" + tags.join('+');
     }
 
-    request(giphyOptions.url + "?" + query, (err, res, body) => {
+    request(giphyOptions.url + "?" + query, function (err, res, body) {
         if (err || res.statusCode !== 200) {
             console.log("Giphy: Found Error " + body);
             console.log(err);

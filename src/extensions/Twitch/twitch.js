@@ -63,19 +63,24 @@ function checkOnlineState(channel) {
     twitch.getStreams({
         channel: streamList
     }, (err, res) => {
+        if(typeof res.streams == 'undefined') return; // Handle if no stream is found
         streams = res.streams
         if (streams.length >= 1) {
             // Check online streams and notify on newcomer
             var activeStreamer = [];
             for (var i in streams) {
                 var currChannel = streams[i].channel;
-                var userChannel = currChannel.name
+                var currGame = streams[i].game;
+                var userChannel = currChannel.name;
+                var displayingName = currChannel.display_name;
+                var statusChannel = currChannel.status;
+
                 activeStreamer.push(streams[i].channel.name);
 
                 if(!(isOnline[userChannel])) {
                     // Was offline -> Now online
-                    console.log(userChannel + " is now online@" + currChannel.url);
-                    channel.sendMessage(userChannel + "is now online@" + currChannel.url);
+                    channel.sendMessage("**" + displayingName + "** is now online playing \n" + currGame + "@_" + statusChannel + "_ \n"
+                                        + currChannel.url);
                 }
                 isOnline[userChannel] = true;
             }

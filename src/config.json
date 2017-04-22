@@ -2,7 +2,22 @@
     "debug": true,
     "commandPrefix": "!",
     "twitchNotify": [
+        "beyondthesummit",
+        "esea",
         "esl_csgo",
-        "esl_csg0"
+        "gronkh",
+        "hiko",
+        "jerma985",
+        "maikelele",
+        "nbk",
+        "officialf0rest",
+        "officialfriberg",
+        "officialgetright",
+        "olofmeister",
+        "pashabiceps",
+        "simpleof",
+        "snax",
+        "ster",
+        "stewie2k"
     ]
 }

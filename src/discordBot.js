@@ -61,6 +61,8 @@ Permissions.checkPermission = function(user, permission) {
         }
 
         try {
+            if (typeof Permissions.users[user.id] == 'undefined') return true;
+
             if (Permissions.users[user.id].hasOwnProperty(permission)) {
                 allowed = Permissions.users[user.id][permission] === true;
             }
@@ -231,7 +233,7 @@ var bot = new Discord.Client();
 
 bot.on('ready', () => {
     console.log('Logged in! Serving in ' + bot.guilds.array().length + ' servers');
-    //require('./plugins.js').init();
+    require('./plugins.js').init();
     console.log('type ' + Config.commandPrefix + 'help in Discord for Commandlist.');
     bot.user.setGame('Chill fam.');
 

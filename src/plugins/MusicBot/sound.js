@@ -2,50 +2,63 @@ const request = require('request');
 const youtubedl = require('youtube-dl');
 
 const sound = {
-    "bitchdab": "https://www.youtube.com/watch?v=SCQXlKXBgU8",
-    "boom": "https://www.youtube.com/watch?v=Ag6Cm7w5ICU",
-    "choppa": "https://www.youtube.com/watch?v=umBzgEDIJ5E",
-    "cunt": "https://www.youtube.com/watch?v=OI_RGqaFTPw",
-    "damnson": "https://www.youtube.com/watch?v=vzovMpji0T8",
-    "danger-friendzone": "https://www.youtube.com/watch?v=RhzArIfe_Qs",
-    "danger-moan": "https://www.youtube.com/watch?v=zezyuiwr4fs",
-    "doit": "https://www.youtube.com/watch?v=kkAwJ2uYCXA",
-    "dontgiveit": "https://www.youtube.com/watch?v=Opy8YmDKX2M",
+    "bitchdab": "./plugins/MusicBot/sounds/bitchdab.mp3",
+    "boom": "./plugins/MusicBot/sounds/boom.mp3",
+    "choppa": "./plugins/MusicBot/sounds/choppa.mp3",
+    "cunt": "./plugins/MusicBot/sounds/cunt.mp3",
+    "damnson": "./plugins/MusicBot/sounds/danger-friendzone.mp3",
+    "danger-friendzone": "./plugins/MusicBot/sounds/.mp3",
+    "danger-hisname": "./plugins/MusicBot/sounds/hisnameis.mp3",
+    "danger-moan": "./plugins/MusicBot/sounds/danger-moan.mp3",
+    "danger-oncetoldme": "./plugins/MusicBot/sounds/danger-oncetoldme.mp3",
+    "doit": "./plugins/MusicBot/sounds/doit.mp3",
+    "dontgiveit": "./plugins/MusicBot/sounds/dontgiveit.mp3",
     "drop1": "https://www.youtube.com/watch?v=hyVZNsYxb0Q",
-    "familiarfaces": "https://www.youtube.com/watch?v=LB7014dH5lg",
-    "fuckthis": "https://www.youtube.com/watch?v=7-7Vxqaq3K0",
-    "gameover": "https://www.youtube.com/watch?v=560kW1TmyFc",
-    "getout": "https://www.youtube.com/watch?v=SpmCv4xR9rA",
-    "headshot": "https://www.youtube.com/watch?v=r8GGPKJBAJs",
-    "hefucked": "https://www.youtube.com/watch?v=kpXwN57rRiA",
-    "hellodarkness": "https://www.youtube.com/watch?v=SZmsjAu0jd0",
-    "hoodini": "https://www.youtube.com/watch?v=c0ScEVWaDqE",
-    "howcouldthishappen": "https://www.youtube.com/watch?v=25jKeJ28dSQ",
-    "illuminati": "https://www.youtube.com/watch?v=wjoUKyY5NsY",
-    "jeff": "https://www.youtube.com/watch?v=D8oR9htb0p0",
-    "jesus": "https://www.youtube.com/watch?v=4c50rSnCwAA",
-    "lying": "https://www.youtube.com/watch?v=6P6XKHo7pz4",
-    "merica": "https://www.youtube.com/watch?v=zcibPH3kpCY",
-    "moan": "https://youtu.be/iQMmmiuuXUk?t=14",
-    "money": "https://www.youtube.com/watch?v=vcpmBYfvF_I",
-    "movebitch": "https://www.youtube.com/watch?v=UvUEP341KmI",
-    "niggagay": "https://www.youtube.com/watch?v=bPK5BQIi4zM",
-    "notime": "https://www.youtube.com/watch?v=dk-OfU6UaQo",
-    "retardlaugh": "https://www.youtube.com/watch?v=Iua_USjwNbQ",
-    "rewind": "https://www.youtube.com/watch?v=K91pRSMM3GE",
-    "runbitch": "https://www.youtube.com/watch?v=GYZkNdjV580",
-    "sadviolinmlg": "https://www.youtube.com/watch?v=_htzhlPVJso",
-    "silence": "https://www.youtube.com/watch?v=xxxyWUVwPgk",
+    "familiarfaces": "./plugins/MusicBot/sounds/familiarfaces.mp3",
+    "fuckthis": "./plugins/MusicBot/sounds/fuckthis.mp3",
+    "gameover": "./plugins/MusicBot/sounds/gameover.mp3",
+    "getcamera": "./plugins/MusicBot/sounds/camera.avi",
+    "getout": "./plugins/MusicBot/sounds/getout.mp3",
+    "headshot": "./plugins/MusicBot/sounds/headshot.mp3",
+    "hefucked": "./plugins/MusicBot/sounds/hefucked.mp3",
+    "hellodarkness": "./plugins/MusicBot/sounds/hellodarkness.mp3",
+    "hoodini": "./plugins/MusicBot/sounds/hoodini.mp3",
+    "howcouldthishappen": "./plugins/MusicBot/sounds/howcouldthishappen.mp3",
+    "illuminati": "./plugins/MusicBot/sounds/illuminati.mp3",
+    "jeff": "./plugins/MusicBot/sounds/jeff.mp3",
+    "jesus": "./plugins/MusicBot/sounds/jesus.mp3",
+    "lying": "./plugins/MusicBot/sounds/lying.mp3",
+    "merica": "./plugins/MusicBot/sounds/merica.mp3",
+    "moan": "./plugins/MusicBot/sounds/moan.mp3",
+    "money": "./plugins/MusicBot/sounds/money.mp3",
+    "movebitch": "./plugins/MusicBot/sounds/movebitch.mp3",
+    "niggagay": "./plugins/MusicBot/sounds/niggagay.mp3",
+    "notime": "./plugins/MusicBot/sounds/notime.mp3",
+    "oncetoldme": "./plugins/MusicBot/sounds/oncetoldme.mp3",
+    "realslimshady": "./plugins/MusicBot/sounds/slimshady-standup.mp3",
+    "retardlaugh": "./plugins/MusicBot/sounds/retardlaugh.mp3",
+    "rewind": "./plugins/MusicBot/sounds/rewind.mp3",
+    "runbitch": "./plugins/MusicBot/sounds/runbitch.mp3",
+    "sadviolinmlg": "./plugins/MusicBot/sounds/sadviolinmlg.mp3",
+    "silence": "./plugins/MusicBot/sounds/grille.mp3",
+    "slimshady": "./plugins/MusicBot/sounds/chikachika.mp3",
     "smokeweed": "https://www.youtube.com/watch?v=QsTPtWvA3tc",
+    "sneaky": "./plugins/MusicBot/sounds/sneaky.mp3",
+    "sometrump": "./plugins/MusicBot/sounds/sometrump.mp3",
     "starwarscanteen": "https://www.youtube.com/watch?v=xiceLdfHmYc",
-    "theone": "https://www.youtube.com/watch?v=Qa0pLkW300I",
-    "thuglife": "https://www.youtube.com/watch?v=LnjXz3Z0aAg",
-    "thuglife2": "https://www.youtube.com/watch?v=Bq4i_bLFU0Q",
-    "tripple": "https://www.youtube.com/watch?v=cZm3_b29IB0",
-    "trump": "https://www.youtube.com/watch?v=EJjp0jaIHgY",
-    "whatarethose": "https://www.youtube.com/watch?v=n8gjJ-dhUcM",
-    "whocares": "https://www.youtube.com/watch?v=DyzdWHAjD94"
+    "theone": "./plugins/MusicBot/sounds/theone.mp3",
+    "theoneandonly": "./plugins/MusicBot/sounds/theoneandonly.mp3",
+    "thuglife": "./plugins/MusicBot/sounds/thuglife.mp3",
+    "thuglife2": "./plugins/MusicBot/sounds/thuglife2.mp3",
+    "tripple": "./plugins/MusicBot/sounds/tripple.mp3",
+    "trump": "./plugins/MusicBot/sounds/trump.mp3",
+    "trumpet": "./plugins/MusicBot/sounds/trumpet.mp3",
+    "watchasay": "./plugins/MusicBot/sounds/say.avi",
+    "whatarethose": "./plugins/MusicBot/sounds/whatarethose.mp3",
+    "whocares": "./plugins/MusicBot/sounds/whocares.mp3",
+    "wombocombo": "./plugins/MusicBot/sounds/wombo.avi"
 }
+
 /* Command: Play Song of Youtube */
 exports.play = {
     usage: "<Youtube Link>",
@@ -139,9 +152,18 @@ function soundBoard(bot, msg, suffix) {
             resolve(voiceConnection);
         }
     }).then(connection => {
-        var video = youtubedl(sound[soundType])
 
-        const dispatcher = connection.playStream(video);
+        var audio;
+        var dispatcher;
+
+        // Check if it is a youtube link or a file
+        if (sound[soundType].startsWith("https")) {
+            audio = youtubedl(sound[soundType]);
+            dispatcher = connection.playStream(audio);
+        } else {
+            audio = sound[soundType];
+            dispatcher = connection.playFile(audio);
+        }
         connection.player.dispatcher.setVolume(0.25);
 
         dispatcher.on("end", end => {

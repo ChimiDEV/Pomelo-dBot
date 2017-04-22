@@ -1,12 +1,7 @@
 const request = require('request');
 const AuthDetails = require('../../auth.json');
-
-try {
-    const yt = require("./youtubePlugin");
-    const youtubePlugin = new yt();
-} catch (e) {
-    console.log('Couldn\'t load youtube plugin!\n' + e.stack);
-}
+const yt = require("./youtubePlugin");
+const youtubePlugin = new yt();
 
 /* Command: Image */
 exports.image = {
