@@ -16,7 +16,7 @@ var notifyStream = Config.twitchNotify;
 var isOnline = {}
 
 exports.notifier = function(bot) {
-    var notifyChannel = bot.channels.find("name", "test");
+    var notifyChannel = bot.channels.find("name", Config.textChannel);
     // Initialize
     checkOnlineState(notifyChannel);
 

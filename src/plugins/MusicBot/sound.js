@@ -6,8 +6,8 @@ const sound = {
     "boom": "./plugins/MusicBot/sounds/boom.mp3",
     "choppa": "./plugins/MusicBot/sounds/choppa.mp3",
     "cunt": "./plugins/MusicBot/sounds/cunt.mp3",
-    "damnson": "./plugins/MusicBot/sounds/danger-friendzone.mp3",
-    "danger-friendzone": "./plugins/MusicBot/sounds/.mp3",
+    "damnson": "./plugins/MusicBot/sounds/damnson.mp3",
+    "danger-friendzone": "./plugins/MusicBot/sounds/danger-friendzone.mp3",
     "danger-hisname": "./plugins/MusicBot/sounds/hisnameis.mp3",
     "danger-moan": "./plugins/MusicBot/sounds/danger-moan.mp3",
     "danger-oncetoldme": "./plugins/MusicBot/sounds/danger-oncetoldme.mp3",
@@ -56,7 +56,12 @@ const sound = {
     "watchasay": "./plugins/MusicBot/sounds/say.avi",
     "whatarethose": "./plugins/MusicBot/sounds/whatarethose.mp3",
     "whocares": "./plugins/MusicBot/sounds/whocares.mp3",
-    "wombocombo": "./plugins/MusicBot/sounds/wombo.avi"
+    "wombocombo": "./plugins/MusicBot/sounds/wombo.avi",
+    "skrrr": "./plugins/MusicBot/sounds/skrrr.mp3",
+    "wasted": "./plugins/MusicBot/sounds/wasted.mp3",
+    "smash": "./plugins/MusicBot/sounds/smash.mp3",
+    "sumfak": "./plugins/MusicBot/sounds/sumfak.mp3",
+    "benisahoe": "./plugins/MusicBot/sounds/benisahoe.mp3"
 }
 
 /* Command: Play Song of Youtube */
@@ -129,7 +134,7 @@ exports.sound = {
 
 function soundBoard(bot, msg, suffix) {
     var soundType = suffix != "" ? suffix : null;
-    if (!soundType) {
+    if (!soundType || !(sound[soundType])) {
         msg.channel.sendMessage("No sound defined");
         return;
     }
