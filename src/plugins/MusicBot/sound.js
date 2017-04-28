@@ -61,7 +61,15 @@ const sound = {
     "wasted": "./plugins/MusicBot/sounds/wasted.mp3",
     "smash": "./plugins/MusicBot/sounds/smash.mp3",
     "sumfak": "./plugins/MusicBot/sounds/sumfak.mp3",
-    "benisahoe": "./plugins/MusicBot/sounds/benisahoe.mp3"
+    "benisahoe": "./plugins/MusicBot/sounds/benisahoe.mp3",
+
+    "dontunderstand": "./plugins/MusicBot/sounds/dontunderstand.mp3",
+    "disappointed": "./plugins/MusicBot/sounds/disappointed.mp3",
+    "drums": "./plugins/MusicBot/sounds/drums.mp3",
+    "kiss": "./plugins/MusicBot/sounds/kiss.mp3",
+    "take16": "./plugins/MusicBot/sounds/take16.mp3",
+    "911": "./plugins/MusicBot/sounds/911.mp3",
+    "twoshots": "./plugins/MusicBot/sounds/twoshots.mp3"
 }
 
 /* Command: Play Song of Youtube */

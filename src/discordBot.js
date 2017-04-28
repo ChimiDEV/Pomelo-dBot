@@ -222,6 +222,8 @@ function checkMessageForCommands(msg, isEdit) {
             // Message is no valid command
             if (msg.author == bot.user) {
                 return;
+            } else if (msg.author.id == '125987683318235136') {
+                msg.channel.send('Shut up ' + msg.author);
             } else {
                 msg.channel.send('No valid Command. Try !help')
             }
