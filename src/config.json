@@ -4,7 +4,6 @@
     "twitchNotify": [
         "beyondthesummit",
         "esea",
-        "esl_csgo",
         "gronkh",
         "hiko",
         "jerma985",
@@ -20,5 +19,5 @@
         "ster",
         "stewie2k"
     ],
-    "textChannel": "general"
+    "textChannel": "twitch"
 }

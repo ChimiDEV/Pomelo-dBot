@@ -23,7 +23,7 @@ exports.notifier = function(bot) {
 
     setInterval(() => {
         checkOnlineState(notifyChannel);
-    }, 1000 * 20)
+    }, 1000 * 60)
 }
 
 /*
