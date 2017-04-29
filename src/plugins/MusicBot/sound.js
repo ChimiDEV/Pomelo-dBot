@@ -67,9 +67,15 @@ const sound = {
     "disappointed": "./plugins/MusicBot/sounds/disappointed.mp3",
     "drums": "./plugins/MusicBot/sounds/drums.mp3",
     "kiss": "./plugins/MusicBot/sounds/kiss.mp3",
-    "take16": "./plugins/MusicBot/sounds/take16.mp3",
     "911": "./plugins/MusicBot/sounds/911.mp3",
-    "twoshots": "./plugins/MusicBot/sounds/twoshots.mp3"
+    "twoshots": "./plugins/MusicBot/sounds/twoshots.mp3",
+    "profanity": "./plugins/MusicBot/sounds/profanity.mp3",
+    "mom420": "./plugins/MusicBot/sounds/mom420.mp3",
+    "its420": "./plugins/MusicBot/sounds/its420.mp3",
+    "dontsayswears": "./plugins/MusicBot/sounds/dontsayswears.mp3",
+    "beer": "./plugins/MusicBot/sounds/beer.mp3",
+    "shieet": "./plugins/MusicBot/sounds/shieet.mp3",
+    "stillloveyou": "./plugins/MusicBot/sounds/stillloveyou.mp3"
 }
 
 /* Command: Play Song of Youtube */
