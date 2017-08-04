@@ -2,8 +2,6 @@
     "debug": true,
     "commandPrefix": "!",
     "twitchNotify": [
-        "beyondthesummit",
-        "esea",
         "gronkh",
         "hiko",
         "jerma985",
@@ -14,9 +12,7 @@
         "officialgetright",
         "olofmeister",
         "pashabiceps",
-        "s1mpleof",
         "snax",
-        "ster",
         "stewie2k"
     ],
     "textChannel": "twitch"
