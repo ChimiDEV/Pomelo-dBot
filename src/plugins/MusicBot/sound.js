@@ -75,7 +75,8 @@ const sound = {
     "dontsayswears": "./plugins/MusicBot/sounds/dontsayswears.mp3",
     "beer": "./plugins/MusicBot/sounds/beer.mp3",
     "shieet": "./plugins/MusicBot/sounds/shieet.mp3",
-    "stillloveyou": "./plugins/MusicBot/sounds/stillloveyou.mp3"
+    "stillloveyou": "./plugins/MusicBot/sounds/stillloveyou.mp3",
+    "thetinggoes": "./plugins/MusicBot/sounds/thetinggoes.mp3"
 }
 
 /* Command: Play Song of Youtube */
