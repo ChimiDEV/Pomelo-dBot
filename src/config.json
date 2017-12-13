@@ -2,18 +2,6 @@
     "debug": true,
     "commandPrefix": "!",
     "twitchNotify": [
-        "gronkh",
-        "hiko",
-        "jerma985",
-        "maikelele",
-        "nbk",
-        "officialf0rest",
-        "officialfriberg",
-        "officialgetright",
-        "olofmeister",
-        "pashabiceps",
-        "snax",
-        "stewie2k"
     ],
     "textChannel": "twitch"
 }
