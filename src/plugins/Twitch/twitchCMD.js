@@ -36,7 +36,7 @@ function twitchFunction(bot, msg, suffix) {
     args = gameAlias[args] ? gameAlias[args] : args;
 
     if (!cmd) {
-        msg.channel.sendMessage('Missing twitch command');
+        msg.channel.send('Missing twitch command');
         return;
     }
 
@@ -50,7 +50,7 @@ function twitchFunction(bot, msg, suffix) {
         case "esports":
             break;
         default:
-            msg.channel.sendMessage('Invalid twitch command');
+            msg.channel.send('Invalid twitch command');
             return;
     }
 }
@@ -80,13 +80,13 @@ function twitchTopGames(msg) {
         if(msgTxt.length < 1) {
             msgTxt = "No top Games found."
         }
-        msg.channel.sendMessage(msgTxt);
+        msg.channel.send(msgTxt);
     });
 }
 
 function twitchGame(msg, game) {
     if(!game) {
-        msg.channel.sendMessage("No Game given");
+        msg.channel.send("No Game given");
         return;
     }
 
@@ -112,7 +112,7 @@ function twitchGame(msg, game) {
             "Streamer: " + streamUser + "\n" +
             streamUrl;
 
-        msg.channel.sendMessage(msgTxt)
+        msg.channel.send(msgTxt)
     });
 }
 

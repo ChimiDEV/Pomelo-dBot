@@ -14,13 +14,13 @@ function YoutubePlugin() {
 YoutubePlugin.prototype.respond = function(query, channel, bot) {
     this.youtube.search(query, 1, (err, result) => {
         if (err) {
-            channel.sendMessage("¯\\_(ツ)_/¯");
+            channel.send("¯\\_(ツ)_/¯");
             console.log(err);
         } else {
             if (!result || !result.items || result.items.length < 1) {
-                channel.sendMessage(YoutubePlugin.RickrollUrl);
+                channel.send(YoutubePlugin.RickrollUrl);
             } else {
-                channel.sendMessage("http://www.youtube.com/watch?v=" + result.items[0].id.videoId);
+                channel.send("http://www.youtube.com/watch?v=" + result.items[0].id.videoId);
             }
         }
     });

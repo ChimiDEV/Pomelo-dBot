@@ -88,7 +88,7 @@ exports.play = {
 
 function playSound(bot, msg, suffix) {
     if (!(suffix.toLowerCase().startsWith('http')) || !(suffix.toLowerCase().startsWith('https'))) {
-        msg.channel.sendMessage("No Youtube link defined.");
+        msg.channel.send("No Youtube link defined.");
         return;
     }
 
@@ -129,7 +129,7 @@ function playSound(bot, msg, suffix) {
         });
     }, err => {
         console.log(err);
-        msg.channel.sendMessage(err);
+        msg.channel.send(err);
     });
 }
 /* --- */
@@ -137,7 +137,7 @@ function playSound(bot, msg, suffix) {
 /* Command: Sounboard */
 exports.sound = {
     usage: "<Sound>",
-    description: function() {
+    description: function () {
         var str = 'Currently available sounds:\n'
         for (var s in sound) {
             str += "\t\t" + s + "\n"
@@ -150,7 +150,7 @@ exports.sound = {
 function soundBoard(bot, msg, suffix) {
     var soundType = suffix != "" ? suffix : null;
     if (!soundType || !(sound[soundType])) {
-        msg.channel.sendMessage("No sound defined");
+        msg.channel.send("No sound defined");
         return;
     }
     // Join the voice channel if not already in one.
@@ -173,30 +173,43 @@ function soundBoard(bot, msg, suffix) {
         }
     }).then(connection => {
 
-        var audio;
-        var dispatcher;
-
-        // Check if it is a youtube link or a file
-        if (sound[soundType].startsWith("https")) {
-            audio = youtubedl(sound[soundType]);
-            dispatcher = connection.playStream(audio);
-        } else {
-            audio = sound[soundType];
-            dispatcher = connection.playFile(audio);
-        }
-        connection.player.dispatcher.setVolume(0.25);
-
-        dispatcher.on("end", end => {
-            // Leave the voice channel.
-            if (connection != null) {
-                connection.player.dispatcher.end();
-                connection.channel.leave();
-                return;
-            }
+        const broadcast = bot.createVoiceBroadcast();
+        const audio = sound[soundType];
+        broadcast.playFile(audio);
+        client.voiceConnections.values().forEach(connection => {
+            const dispatcher = connection.playBroadcast(broadcast);
+            dispatcher.on("end", end => {
+                // Leave the voice channel.
+                if (connection != null) {
+                    connection.channel.leave();
+                    return;
+                }
         });
+
+        /*var audio;
+          var dispatcher;
+
+          // Check if it is a youtube link or a file
+          if (sound[soundType].startsWith("https")) {
+              audio = youtubedl(sound[soundType]);
+              dispatcher = connection.playStream(audio);
+          } else {
+              audio = sound[soundType];
+              dispatcher = connection.playFile(audio);
+          }
+          connection.player.dispatcher.setVolume(0.25);
+
+          dispatcher.on("end", end => {
+              // Leave the voice channel.
+              if (connection != null) {
+                  connection.player.dispatcher.end();
+                  connection.channel.leave();
+                  return;
+              }
+          });*/
     }, err => {
         console.log(err);
-        msg.channel.sendMessage(err);
+        msg.channel.send(err);
     });
 }
 /* --- */

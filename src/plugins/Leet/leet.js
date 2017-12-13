@@ -8,7 +8,7 @@ exports.leet = {
 }
 
 function leetIt(bot, msg, suffix) {
-    msg.channel.sendMessage(leet.convert(suffix));
+    msg.channel.send(leet.convert(suffix));
 }
 /* --- */
 

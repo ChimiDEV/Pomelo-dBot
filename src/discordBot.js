@@ -103,16 +103,16 @@ var commands = {
     'ping': {
         description: 'Responds pong, useful for checking if bot is alive.',
         process: function(bot, msg, suffix) {
-            msg.channel.sendMessage(msg.author + ' pong!');
+            msg.channel.send(msg.author + ' pong!');
             if (suffix) {
-                msg.channel.sendMessage(' Note that !ping takes no arguments!');
+                msg.channel.send(' Note that !ping takes no arguments!');
             }
         }
     },
     'pong': {
         description: 'Responds to Pakku, because only he is that stupid.',
         process: function(bot, msg, suffix) {
-            msg.channel.sendMessage(msg.author + ' Idiot.');
+            msg.channel.send(msg.author + ' Idiot.');
         }
     }
 };
@@ -128,7 +128,7 @@ function checkMessageForCommands(msg, isEdit) {
                 cmdTxt = msg.content.split(' ')[1];
                 suffix = msg.content.substring(bot.user.mention().length + cmdTxt.length + Config.commandPrefix.length + 1);
             } catch (e) {
-                msg.channel.sendMessage('Yes?');
+                msg.channel.send('Yes?');
                 return;
             }
         }
@@ -164,10 +164,10 @@ function checkMessageForCommands(msg, isEdit) {
                 } else {
                     info = 'No **' + suffix + '** Command found'
                 }
-                msg.channel.sendMessage(info);
+                msg.channel.send(info);
             } else {
                 // Give help to all commands
-                msg.author.sendMessage('**Available Commands:**').then(function() {
+                msg.author.send('**Available Commands:**').then(function() {
                     var batch = '';
                     var sortedCommands = Object.keys(commands).sort();
 
@@ -190,7 +190,7 @@ function checkMessageForCommands(msg, isEdit) {
 
                         var newBatch = batch + '\n' + info;
                         if (newBatch.length > (1024 - 8)) {
-                            msg.author.sendMessage(batch);
+                            msg.author.send(batch);
                             batch = info;
                         } else {
                             batch = newBatch;
@@ -198,7 +198,7 @@ function checkMessageForCommands(msg, isEdit) {
                     }
 
                     if (batch.length > 0) {
-                        msg.author.sendMessage(batch);
+                        msg.author.send(batch);
                     }
                 });
             }
@@ -213,10 +213,10 @@ function checkMessageForCommands(msg, isEdit) {
                         msgTxt = '\n' + e.stack;
                     }
                     console.log(e.stack);
-                    msg.channel.sendMessage(msgText);
+                    msg.channel.send(msgText);
                 }
             } else {
-                msg.channel.sendMessage('You are not allowed to run ' + cmdTxt + '!');
+                msg.channel.send('You are not allowed to run ' + cmdTxt + '!');
             }
         } else {
             // Message is no valid command

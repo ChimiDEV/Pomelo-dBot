@@ -10,7 +10,7 @@ exports.wiki = {
 function wikiSearch(bot, msg, suffix) {
     var query = suffix != "" ? suffix : null;
     if (!query) {
-        msg.channel.sendMessage("Missing a search term");
+        msg.channel.send("Missing a search term");
         return;
     }
 
@@ -33,7 +33,7 @@ function wikiSearch(bot, msg, suffix) {
 function continuation(sumText, msg) {
     var paragraph = sumText.shift();
     if (paragraph) {
-        msg.channel.sendMessage(paragraph, continuation);
+        msg.channel.send(paragraph, continuation);
     }
 };
 /* --- */

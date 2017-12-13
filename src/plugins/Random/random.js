@@ -11,7 +11,7 @@ function mathFactFunction(bot, msg, suffix) {
     request('http://numbersapi.com/random/math?json', (err, res, body) => {
         var data = JSON.parse(body);
         if (data && data.text) {
-            msg.channel.sendMessage(data.text)
+            msg.channel.send(data.text)
         }
     });
 }
@@ -32,9 +32,9 @@ function urbanFunction(bot, msg, suffix) {
             if (json.example) {
                 message = message + '\n\n__Example__:\n' + json.example;
             }
-            msg.channel.sendMessage(message);
+            msg.channel.send(message);
         } else {
-            msg.channel.sendMessage('No matches found.');
+            msg.channel.send('No matches found.');
         }
     });
 }

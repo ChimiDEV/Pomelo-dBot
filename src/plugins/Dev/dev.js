@@ -18,7 +18,7 @@ function srcFunction(bot, msg, suffix) {
         if (repo) {
             var msgTxt = "_Pomelo Discord Bot_ by **" + repo.owner.login + "** \n" +
                 repo.html_url;
-            msg.channel.sendMessage(msgTxt);
+            msg.channel.send(msgTxt);
         }
     });
 }

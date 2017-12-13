@@ -50,9 +50,9 @@ function memeGenerator(bot, msg, suffix) {
 
     imgflipper.generateMeme(meme[memeType], memeText[1] ? memeText[1] : '', memeText[3] ? memeText[3] : '', (err, img) => {
         if (img) {
-            msg.channel.sendMessage(img);
+            msg.channel.send(img);
         } else {
-            msg.channel.sendMessage('No valid Arguments');
+            msg.channel.send('No valid Arguments');
         }
     });
 }

@@ -24,9 +24,9 @@ function giphyFunction(bot, msg, suffix) {
 
     getGif(tags, (id) => {
         if (typeof id !== "undefined") {
-            msg.channel.sendMessage("http://media.giphy.com/media/" + id + "/giphy.gif [Tags: " + (tags ? tags : "Random GIF") + "]");
+            msg.channel.send("http://media.giphy.com/media/" + id + "/giphy.gif [Tags: " + (tags ? tags : "Random GIF") + "]");
         } else {
-            msg.channel.sendMessage("Invalid tags, try something different. [Tags: " + (tags ? tags : "Random GIF") + "]");
+            msg.channel.send("Invalid tags, try something different. [Tags: " + (tags ? tags : "Random GIF") + "]");
         }
     });
 }

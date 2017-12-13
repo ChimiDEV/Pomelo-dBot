@@ -46,7 +46,7 @@ function checkOnlineState(channel, index) {
         } else if (stream && !(isOnline[currChannel])) {
             // Is now online -> Notify in Channel
             console.log(currChannel + " is now online@" + stream.channel.url);
-            channel.sendMessage(currChannel + "is now online@" + stream.channel.url);
+            channel.send(currChannel + "is now online@" + stream.channel.url);
             isOnline[currChannel] = true;
         } else {
             // Was already online
@@ -79,7 +79,7 @@ function checkOnlineState(channel) {
 
                 if(!(isOnline[userChannel])) {
                     // Was offline -> Now online
-                    channel.sendMessage("**" + displayingName + "** is now online playing \n" + currGame + "@_" + statusChannel + "_ \n"
+                    channel.send("**" + displayingName + "** is now online playing \n" + currGame + "@_" + statusChannel + "_ \n"
                                         + currChannel.url);
                 }
                 isOnline[userChannel] = true;
