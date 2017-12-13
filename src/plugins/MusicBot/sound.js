@@ -184,6 +184,7 @@ function soundBoard(bot, msg, suffix) {
                     connection.channel.leave();
                     return;
                 }
+            });
         });
 
         /*var audio;
