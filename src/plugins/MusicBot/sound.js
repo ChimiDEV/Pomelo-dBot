@@ -173,18 +173,31 @@ function soundBoard(bot, msg, suffix) {
         }
     }).then(connection => {
 
-        const broadcast = bot.createVoiceBroadcast();
-        const audio = sound[soundType];
-        broadcast.playFile(audio);
-
-        const dispatcher = connection.playBroadcast(broadcast);
-        dispatcher.on("end", end => {
+        const audio = sound[soundType];        
+        const dispatcher = connection.playFile(audio);
+        
+        dispatcher.on('end', () => {
             // Leave the voice channel.
             if (connection != null) {
+                // connection.dispatcher.end();
                 connection.channel.leave();
                 return;
             }
         });
+
+        /* const broadcast = bot.createVoiceBroadcast();
+        broadcast.playFile(audio);
+
+        const dispatcher = connection.playBroadcast(broadcast);
+        dispatcher.on("end", end => {
+            console.log('Should leave channel')
+            // Leave the voice channel.
+            if (connection != null) {
+                connection.dispatcher.end();
+                connection.channel.leave();
+                return;
+            }
+        }); */
 
         /*var audio;
           var dispatcher;
