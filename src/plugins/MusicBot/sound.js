@@ -176,16 +176,14 @@ function soundBoard(bot, msg, suffix) {
         const broadcast = bot.createVoiceBroadcast();
         const audio = sound[soundType];
         broadcast.playFile(audio);
-        client.voiceConnections.values().forEach(connection => {
-            const dispatcher = connection.playBroadcast(broadcast);
-            dispatcher.on("end", end => {
-                // Leave the voice channel.
-                if (connection != null) {
-                    connection.channel.leave();
-                    return;
-                }
-            });
-        });
+
+        const dispatcher = connection.playBroadcast(broadcast);
+        dispatcher.on("end", end => {
+            // Leave the voice channel.
+            if (connection != null) {
+                connection.channel.leave();
+                return;
+            }
 
         /*var audio;
           var dispatcher;
