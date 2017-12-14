@@ -1,57 +1,27 @@
 const fs = require('fs');
-const {Writable} = require('stream');
+const logger = require('./lib/util/logger');
+const ClientManager = require('./lib/manager/ClientManager');
 
 const Discord = require('discord.js');
 const discordClient = new Discord.Client();
 
-function generateOutputFile(channel, member) {
-    // use IDs instead of username cause some people have stupid emojis in their name
-    const fileName = `./recordings/${channel.id}-${member.id}-${Date.now()}.pcm`;
-    return {
-        fileName,
-        stream: fs.createWriteStream(fileName)
-    };
-}
-
-let Config = {};
-let AuthDetails = {};
-
-// Read Authenticatins Details
-try {
-    AuthDetails = require('./auth.json')
-} catch (e) {
-    console.log('Please provide a authentication json file with a bot token.');
-    process.exit();
-}
-
-// Generate a config.json
-try {
-    Config = require('./config.json');
-} catch (e) {
-    Config.debug = false;
-    Config.commandPrefix = '!';
-    try {
-        if (fs.lstatSync('./config.json').isFile()) {
-            console.log('WARNING: config.json found but we couldn\'t read it!\n' + e.stack);
-        }
-    } catch (innerError) {
-        fs.writeFile('./config.json', JSON.stringify(Config, null, 2), (err) => {
-            if (err) {
-                console.log(err);
-            }
-        });
-    }
-}
+const AuthDetails = ClientManager.authentication('./auth.json');
+const Config = ClientManager.configure('./config.json');
+const Permissions = ClientManager.permission('./permissions.json', ['eval', 'ping']);
+const Commands = ClientManager.loadCommands();
 
 // Log Bot in
 discordClient.login(AuthDetails.bot_token);
 
-discordClient.on('message', message => {
-    if (!message.guild) {
-        return;
-    }
+discordClient.on('ready', () => {
+    logger.info(`Logged in! Serving in ${discordClient.guilds.array().length} servers`, 'discordClient');
+    logger.info(`type ${Config.commandPrefix}help in Discord for Commandlist.`, 'discordClient');
+    discordClient.user.setGame('Chill fam.');
+});
 
-    if (message.content.startsWith(`${Config.commandPrefix}join`)) {
+/*discordClient.on('message', message => {
+
+     if (message.content.startsWith(`${Config.commandPrefix}join`)) {
         if (message.member.voiceChannel) {
             message.member.voiceChannel.join().then(connection => {
                 message.reply('Connected successfully to voice channel')
@@ -87,4 +57,107 @@ discordClient.on('message', message => {
             message.reply('You need to join a voice channel first!');
         }
     }
-});
+});*/
+
+// Message Handling
+let handleMessage = message => {
+    if (!message.guild) {
+        return;
+    }
+
+    // Check if message is a command
+    if (message.author.id !== discordClient.user.id && (message.content.startsWith(Config.commandPrefix))) {
+        logger.info(`Treating ${message.content} form ${message.author} as command`, discordClient);
+
+        let cmdTxt = message.content.split(' ')[0].substring(Config.commandPrefix.length);
+        let suffix = message.content.substring(cmdTxt.length + Config.commandPrefix.length + 1);
+
+        if (message.isMentioned(discordClient.user)) {
+            try {
+                cmdTxt = message.content.split(' ')[1];
+                suffix = message.content.substring(discordClient.user.mention().length + cmdTxt.length + Config.commandPrefix.length + 1);
+            } catch (e) {
+                message.channel.send('Yes?');
+                return;
+            }
+        }
+
+        let cmd = Commands[cmdTxt];
+        if (cmdTxt == 'help') {
+            // Help is special since it iterates over the other commands
+            if (suffix) {
+                // give help for given arguments
+                let cmds = suffix.split(' ').filter(cmd => {
+                    return Commands[cmd];
+                });
+                let info = '';
+                if(cmds.length > 0) {
+                    cmds.forEach(cmdName => {
+                        info += `** ${Config.commandPrefix}${cmdName} **`;
+                        let usage = Commands[cmdName].usage;
+                        if (usage) {
+                            info += ` ${usage}`;
+                        }
+
+                        let description = Commands[cmdName].description;
+                        if (description instanceof Function) {
+                            description = desc();
+                        }
+                        if (description) {
+                            info += `\n\t ${description}`;
+                        }
+                        info += '\n';
+                    });
+                } else {
+                    info = `No ** ${suffix} ** Command found`;
+                }
+                message.channel.send(info);
+            } else {
+                // Give help for all commands
+                message.author.send('**Available Commands:**').then(() => {
+                    let batch = '';
+                    let sortedCommands = Object.keys(Commands).sort();
+
+                    sortedCommands.forEach(cmdName => {
+                        let info = `** ${Config.commandPrefix}${cmdName} **`;
+                        let usage = Commands[cmdName].usage;
+                        if (usage) {
+                            info += ` ${usage}`;
+                        }
+
+                        let description = Commands[cmdName].description;
+                        if (description instanceof Function) {
+                            description = desc();
+                        }
+                        if (description) {
+                            info += `\n\t ${description}`;
+                        }
+                        info += '\n';
+
+                        let newBatch = `${batch}\n${info}`; 
+                        if (newBatch.length > (1024 - 8)) {
+                            message.author.send(batch);
+                            batch = info;
+                        } else {
+                            batch = newBatch;
+                        }
+                    });
+
+                    if (batch.length > 0) {
+                        message.author.send(batch);
+                    }
+                });
+            }
+        } else if (cmd) {
+            if (Permissions.checkPermission(message.author, cmdTxt)) {
+                cmd.process(discordClient, message, suffix);
+            } else {
+                message.channel.send(`You are not allowed to run ${cmdTxt}!`);
+            }
+        } else {
+            message.channel.send('No valid Command. Try !help');
+        }
+    }
+}
+
+discordClient.on('message', handleMessage);
