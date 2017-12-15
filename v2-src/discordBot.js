@@ -1,23 +1,15 @@
 const fs = require('fs');
 const logger = require('./lib/util/logger');
 const ClientManager = require('./lib/manager/ClientManager');
+const VoiceManager = require('./lib/manager/VoiceManager');
 
 const Discord = require('discord.js');
 const discordClient = new Discord.Client();
 
 const AuthDetails = ClientManager.authentication('./auth.json');
 const Config = ClientManager.configure('./config.json');
-const Permissions = ClientManager.permission('./permissions.json', ['eval', 'ping']);
+const Permissions = ClientManager.permission('./permissions.json', ['eval', 'exit']);
 const Commands = ClientManager.loadCommands();
-
-// Log Bot in
-discordClient.login(AuthDetails.bot_token);
-
-discordClient.on('ready', () => {
-    logger.info(`Logged in! Serving in ${discordClient.guilds.array().length} servers`, 'discordClient');
-    logger.info(`type ${Config.commandPrefix}help in Discord for Commandlist.`, 'discordClient');
-    discordClient.user.setGame('Chill fam.');
-});
 
 /*discordClient.on('message', message => {
 
@@ -67,7 +59,7 @@ let handleMessage = message => {
 
     // Check if message is a command
     if (message.author.id !== discordClient.user.id && (message.content.startsWith(Config.commandPrefix))) {
-        logger.info(`Treating ${message.content} form ${message.author} as command`, discordClient);
+        logger.info(`Treating ${message.content} from ${message.author} as command`, 'discordClient');
 
         let cmdTxt = message.content.split(' ')[0].substring(Config.commandPrefix.length);
         let suffix = message.content.substring(cmdTxt.length + Config.commandPrefix.length + 1);
@@ -160,4 +152,79 @@ let handleMessage = message => {
     }
 }
 
+// Log Bot in
+discordClient.login(AuthDetails.bot_token);
+
+discordClient.on('ready', () => {
+    logger.info(`Logged in! Serving in ${discordClient.guilds.array().length} servers`, 'discordClient');
+    logger.info(`type ${Config.commandPrefix}help in Discord for Commandlist.`, 'discordClient');
+    discordClient.user.setGame('Chill fam.');
+
+    // Prepare 'standard' textChannel to send Message to
+    if (Config.guildName && Config.textChannel) {
+        let guild = discordClient.guilds.find('name', Config.guildName);
+        if (guild) {
+            let textChannel = guild.channels.find('name', Config.textChannel)
+            if (textChannel) {
+                logger.info('Add standard text channel for messages', 'discordClient');
+                discordClient._standardTextChannel = textChannel;
+            }
+        }
+    } else {
+        logger.info(`Client couldn't add a standard text channel, some functions may not work`, 'discordClient');
+    }
+
+    // Join voice channel, if guildName and joinChannel is given and listen for hotword
+    if (Config.guildName && Config.joinChannel) {
+        let guild = discordClient.guilds.find('name', Config.guildName);
+        if (guild) {
+            let voiceChannel = guild.channels.find('name', Config.joinChannel);
+            if (voiceChannel) {
+                voiceChannel.join()
+                    .then(connection => {
+                        // Configure connected voiceChannel
+                        discordClient._voiceChannel = voiceChannel;
+                        discordClient._voiceChannelConnection = connection;
+
+                        logger.info(`Client joined ${voiceChannel.name}@${guild.name}`, 'discordClient');
+                        if (discordClient._standardTextChannel) {
+                            discordClient._standardTextChannel.send(`Client joined ${voiceChannel.name}@${guild.name}`);                        
+                        }
+
+                        // Prepare EventListener for listening
+                        // let receiver = connection.createReceiver();
+                        // connection.on('speaking', (user, speaking) => {
+                        //     VoiceManager.handleSpeaking(receiver, user, speaking);
+                        // });
+                    })
+                    .catch(err => {
+                        logger.err(err, 'discordClient')
+                    });
+            } else {
+                logger.warn(`Client couldn't join the channel, joinChannel is not correct`, 'discordClient');            
+            }
+        } else {
+            logger.warn(`Client couldn't join a channel, guildName is not correct`, 'discordClient');
+        }
+    } else {
+        logger.info(`Client couldn't join a channel, please specify a guildName and joinChannel inside config.json`, 'discordClient');
+    }
+
+   /* discordClient.guilds.forEach(guild => {
+        guild.channels.
+        logger.info(guild.channels, 'discordClient');
+    }); */
+});
+
 discordClient.on('message', handleMessage);
+
+discordClient.on('disconnected', () => {
+    logger.info('Disconnected!', 'discordClient');
+    process.exit(1);
+});
+
+// Handle process exit
+process.on('exit', code => {
+    logger.info('Destroy discord Client', 'Process');
+    discordClient.destroy();
+});

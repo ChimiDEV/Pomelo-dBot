@@ -1,4 +1,7 @@
 {
   "debug": true,
-  "commandPrefix": "!"
+  "commandPrefix": "!",
+  "guildName": "#Pomelo",
+  "joinChannel": "\\_ounge²",
+  "textChannel": "general"
 }

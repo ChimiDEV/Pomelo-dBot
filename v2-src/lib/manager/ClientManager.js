@@ -83,7 +83,6 @@ class ClientManager {
                     logger.err(err, 'Permission');
                 }
 
-                console.log(allowed);
                 return allowed;
             } catch (err) {
                 logger.err(err, 'Permission');
