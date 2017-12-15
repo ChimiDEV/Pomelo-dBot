@@ -93,7 +93,7 @@ let handleMessage = message => {
 
                         let description = Commands[cmdName].description;
                         if (description instanceof Function) {
-                            description = desc();
+                            description = description();
                         }
                         if (description) {
                             info += `\n\t ${description}`;
