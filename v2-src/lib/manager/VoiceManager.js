@@ -1,6 +1,4 @@
 const fs = require('fs');
-const header = require('waveheader'); 
-
 
 const Config = require('../../config.json');
 const logger = require('../util/logger');

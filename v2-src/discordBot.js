@@ -11,6 +11,12 @@ const Config = ClientManager.configure('./config.json');
 const Permissions = ClientManager.permission('./permissions.json', ['eval', 'exit']);
 const Commands = ClientManager.loadCommands();
 
+const TextToSpeech = require('watson-developer-cloud/text-to-speech/v1');
+const textToSpeech = new TextToSpeech ({
+    'username': 'cf7821ea-e690-4a48-99c3-ec2a1fc77848',
+    'password': 'uJAhQ1vZx086'
+});
+
 /*discordClient.on('message', message => {
 
      if (message.content.startsWith(`${Config.commandPrefix}join`)) {
@@ -188,7 +194,7 @@ discordClient.on('ready', () => {
 
                         logger.info(`Client joined ${voiceChannel.name}@${guild.name}`, 'discordClient');
                         if (discordClient._standardTextChannel) {
-                            discordClient._standardTextChannel.send(`Client joined ${voiceChannel.name}@${guild.name}`);                        
+                            //discordClient._standardTextChannel.send(`Client joined ${voiceChannel.name}@${guild.name}`);                        
                         }
 
                         // Prepare EventListener for listening
@@ -217,6 +223,32 @@ discordClient.on('ready', () => {
 });
 
 discordClient.on('message', handleMessage);
+discordClient.on('voiceStateUpdate', (oldUser, newUser) => {
+    let newUserChannel = newUser.voiceChannel
+    let oldUserChannel = oldUser.voiceChannel
+
+    console.log()
+
+    if (!oldUserChannel && newUserChannel && !newUser.user.bot) {
+        // New Member joined
+        if (discordClient._voiceChannel.id == newUser.voiceChannel.id) {
+            logger.debug(`${newUser.nickname || newUser.user.username} joined the channel ${newUser.voiceChannel.name}`, 'discordClient')
+            // User joined channel of Bot
+            let params = {
+                text: `Hallo ${newUser.user.username}`,
+                voice: 'de-DE_BirgitVoice',
+                accept: 'audio/mp3'
+            };
+
+            let audioRequest = (textToSpeech.synthesize(params).pipe(fs.createWriteStream('./greeting.mp3')));
+            setTimeout(() => {
+                const dispatcher = discordClient._voiceChannelConnection.playFile('./greeting.mp3');            
+            }, 1000)
+        }
+    } else if (!newUserChannel) {
+        // User left a channel
+    }
+})
 
 discordClient.on('disconnected', () => {
     logger.info('Disconnected!', 'discordClient');
