@@ -72,7 +72,13 @@ const sound = {
   watchasay: './sounds/say.avi',
   whatarethose: './sounds/whatarethose.mp3',
   whocares: './sounds/whocares.mp3',
-  wombocombo: './sounds/wombo.avi'
+  wombocombo: './sounds/wombo.avi',
+
+  dropit: './sounds/dropit.mp3',
+  litgetup: './sounds/litGetUp.mp3',
+  litbestfriend: './sounds/litBestFriend.mp3',
+  litrightnow: './sounds/litRightNow.mp3',
+  elconnecto: './sounds/elconnecto.mp3'
 };
 
 const soundCommand = {
