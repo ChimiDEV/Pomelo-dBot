@@ -72,7 +72,8 @@ const sound = {
     'beer': './sounds/beer.mp3',
     'shieet': './sounds/shieet.mp3',
     'stillloveyou': './sounds/stillloveyou.mp3',
-    'thetinggoes': './sounds/thetinggoes.mp3'
+    'thetinggoes': './sounds/thetinggoes.mp3',
+    'mambo9': './sounds/mambo9.mp3'
 }
 
 
