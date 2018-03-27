@@ -74,6 +74,7 @@ const sound = {
   whocares: './sounds/whocares.mp3',
   wombocombo: './sounds/wombo.avi',
 
+  saddespo: './sounds/saddespo.mp3',
   dropit: './sounds/dropit.mp3',
   litgetup: './sounds/litGetUp.mp3',
   litbestfriend: './sounds/litBestFriend.mp3',
@@ -87,7 +88,7 @@ const soundCommand = {
     usage: '<Sound>',
     description() {
       let str = 'Currently available sounds:\n';
-      Object.getOwnPropertyNames(sound).forEach(soundName => {
+      Object.keys(sound).forEach(soundName => {
         str += `\t\t${soundName}\n`;
       });
       return str;
