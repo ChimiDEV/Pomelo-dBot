@@ -1,7 +1,8 @@
 {
-    "debug": true,
-    "commandPrefix": "!",
-    "twitchNotify": [
-    ],
-    "textChannel": "twitch"
+  "debug": true,
+  "commandPrefix": "!",
+  "guildName": "#Pomelo",
+  "joinChannel": "\\_ounge²",
+  "textChannel": "general",
+  "timeoutTTS": 1000
 }

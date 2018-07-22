@@ -1,6 +1,0 @@
-{
-    "main": "ifttt.js",
-    "dependencies": {
-        "sendmail": "^1.1.x"
-    }
-}
