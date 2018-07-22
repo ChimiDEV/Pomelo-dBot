@@ -1,6 +1,7 @@
 const logger = require('../lib/util/logger');
 
 const sound = {
+  'alia': './sounds/alia.mp3',
   '911': './sounds/911.mp3',
   beer: './sounds/beer.mp3',
   benisahoe: './sounds/benisahoe.mp3',
