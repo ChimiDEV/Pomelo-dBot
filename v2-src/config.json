@@ -3,5 +3,6 @@
   "commandPrefix": "!",
   "guildName": "#Pomelo",
   "joinChannel": "\\_ounge²",
-  "textChannel": "general"
+  "textChannel": "general",
+  "timeoutTTS": 1000
 }

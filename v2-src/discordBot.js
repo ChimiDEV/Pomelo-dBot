@@ -11,51 +11,7 @@ const Config = ClientManager.configure('./config.json');
 const Permissions = ClientManager.permission('./permissions.json', ['eval', 'exit']);
 const Commands = ClientManager.loadCommands();
 
-const TextToSpeech = require('watson-developer-cloud/text-to-speech/v1');
-const textToSpeech = new TextToSpeech ({
-    'username': 'cf7821ea-e690-4a48-99c3-ec2a1fc77848',
-    'password': 'uJAhQ1vZx086'
-});
-
-/*discordClient.on('message', message => {
-
-     if (message.content.startsWith(`${Config.commandPrefix}join`)) {
-        if (message.member.voiceChannel) {
-            message.member.voiceChannel.join().then(connection => {
-                message.reply('Connected successfully to voice channel')
-                let receiver = connection.createReceiver();
-                let voiceChannel = message.member.voiceChannel;
-
-                connection.on('speaking', (user, speaking) => {
-                    if (speaking) {
-                        message.channel.send(`Listening to ${user}`);
-                        const audioStream = receiver.createPCMStream(user);
-
-                        // create an output stream so we can dump our data in a file
-                        //const output = generateOutputFile(voiceChannel, user);
-
-                        // pipe our audio data into the file stream
-                        //audioStream.pipe(output.stream);
-
-                        audioStream.on('end', () => {
-                            //message.channel.send(`I'm no longer listening to ${user}`);
-                            // fs.unlink(output.fileName, err => {
-                            //     if (err) {
-                            //         console.log(err);
-                            //     }
-                            // });
-                        });
-                    } else {
-                        message.channel.send(`I'm no longer listening to ${user}`);
-                    }
-                });
-
-            }).catch(console.log);
-        } else {
-            message.reply('You need to join a voice channel first!');
-        }
-    }
-});*/
+// const TextToSpeech = require('./lib/manager/TextToSpeechManager').getSharedInstance();
 
 // Message Handling
 let handleMessage = message => {
@@ -65,7 +21,7 @@ let handleMessage = message => {
 
     // Check if message is a command
     if (message.author.id !== discordClient.user.id && (message.content.startsWith(Config.commandPrefix))) {
-        logger.info(`Treating ${message.content} from ${message.author} as command`, 'discordClient');
+        logger.info(`Treating ${message.content} from ${message.author.username} as command`, 'discordClient');
 
         let cmdTxt = message.content.split(' ')[0].substring(Config.commandPrefix.length);
         let suffix = message.content.substring(cmdTxt.length + Config.commandPrefix.length + 1);
@@ -155,6 +111,8 @@ let handleMessage = message => {
         } else {
             message.channel.send('No valid Command. Try !help');
         }
+    } else if (message.author.id !== discordClient.user.id) {
+        // Try watson conversation for analysis
     }
 }
 
@@ -164,7 +122,7 @@ discordClient.login(AuthDetails.bot_token);
 discordClient.on('ready', () => {
     logger.info(`Logged in! Serving in ${discordClient.guilds.array().length} servers`, 'discordClient');
     logger.info(`type ${Config.commandPrefix}help in Discord for Commandlist.`, 'discordClient');
-    discordClient.user.setGame('Chill fam.');
+    discordClient.user.setGame('Fortlul');
 
     // Prepare 'standard' textChannel to send Message to
     if (Config.guildName && Config.textChannel) {
@@ -197,6 +155,8 @@ discordClient.on('ready', () => {
                             //discordClient._standardTextChannel.send(`Client joined ${voiceChannel.name}@${guild.name}`);                        
                         }
 
+                        // TextToSpeech.speak(discordClient._voiceChannelConnection, 'Hallo Jannik, kek');
+
                         // Prepare EventListener for listening
                         // let receiver = connection.createReceiver();
                         // connection.on('speaking', (user, speaking) => {
@@ -215,11 +175,6 @@ discordClient.on('ready', () => {
     } else {
         logger.info(`Client couldn't join a channel, please specify a guildName and joinChannel inside config.json`, 'discordClient');
     }
-
-   /* discordClient.guilds.forEach(guild => {
-        guild.channels.
-        logger.info(guild.channels, 'discordClient');
-    }); */
 });
 
 discordClient.on('message', handleMessage);
@@ -234,16 +189,8 @@ discordClient.on('voiceStateUpdate', (oldUser, newUser) => {
         if (discordClient._voiceChannel.id == newUser.voiceChannel.id) {
             logger.debug(`${newUser.nickname || newUser.user.username} joined the channel ${newUser.voiceChannel.name}`, 'discordClient')
             // User joined channel of Bot
-            let params = {
-                text: `Hallo ${newUser.user.username}`,
-                voice: 'de-DE_BirgitVoice',
-                accept: 'audio/mp3'
-            };
 
-            let audioRequest = (textToSpeech.synthesize(params).pipe(fs.createWriteStream('./greeting.mp3')));
-            setTimeout(() => {
-                const dispatcher = discordClient._voiceChannelConnection.playFile('./greeting.mp3');            
-            }, 1000)
+            // TextToSpeech.speak(discordClient._voiceChannelConnection, `Hallo ${newUser.user.username}`, 'de-DE_BirgitVoice');
         }
     } else if (!newUserChannel) {
         // User left a channel
