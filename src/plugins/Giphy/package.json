@@ -1,6 +1,0 @@
-{
-    "main": "giphy.js",
-    "dependencies": {
-        "querystring": "^0.2.0"
-    }
-}

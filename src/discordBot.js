@@ -1,269 +1,209 @@
 const fs = require('fs');
+const logger = require('./lib/util/logger');
+const ClientManager = require('./lib/manager/ClientManager');
+const VoiceManager = require('./lib/manager/VoiceManager');
 
-/* Extensions */
-const twitchNotifier = require('./extensions/Twitch/twitch.js');
-/* --- */
+const Discord = require('discord.js');
+const discordClient = new Discord.Client();
 
-process.on('unhandledRejection', (reason, promise) => {
-    console.log(reason);
-    console.log(promise);
-});
+const AuthDetails = ClientManager.authentication('./auth.json');
+const Config = ClientManager.configure('./config.json');
+const Permissions = ClientManager.permission('./permissions.json', ['eval', 'exit']);
+const Commands = ClientManager.loadCommands();
 
-try {
-    var Discord = require('discord.js');
-} catch (e) {
-    console.log(e.stack);
-    console.log(process.version);
-    process.exit();
-}
+// const TextToSpeech = require('./lib/manager/TextToSpeechManager').getSharedInstance();
 
-console.log('Starting DiscordBot');
-
-try {
-    var AuthDetails = require('./auth.json')
-} catch (e) {
-    console.log('Please provide a authentication json file with a bot token.');
-    process.exit();
-}
-
-// Load custom permissions
-var dangerousCommands = ['eval'];
-var Permissions = {};
-
-try {
-    Permissions = require('./permissions.json');
-} catch (e) {
-    Permissions.global = {};
-    Permissions.users = {};
-
-    for (var i = 0; i < dangerousCommands.length; i++) {
-        var cmd = dangerousCommands[i];
-        if (!Permissions.global.hasOwnProperty(cmd)) {
-            Permissions.global[cmd] = false;
-        }
+// Message Handling
+let handleMessage = message => {
+    if (!message.guild) {
+        return;
     }
 
-    fs.writeFile('./permissions.json', JSON.stringify(Permissions, null, 2), () => {
-        console.log('Wrote new Permission File');
-    });
-}
-
-Permissions.checkPermission = function(user, permission) {
-    try {
-        var allowed = true;
-
-        try {
-            if (Permissions.global.hasOwnProperty(permission)) {
-                allowed = Permissions.global[permission] === true;
-            }
-        } catch (err) {
-            console.log(err);
-        }
-
-        try {
-            if (typeof Permissions.users[user.id] == 'undefined') return true;
-
-            if (Permissions.users[user.id].hasOwnProperty(permission)) {
-                allowed = Permissions.users[user.id][permission] === true;
-            }
-        } catch (err) {
-            console.log(err);
-        }
-
-        return allowed;
-    } catch (err) {
-        console.log(err);
-    }
-    return false;
-}
-
-// Load Config Data
-var Config = {};
-
-try {
-    Config = require('./config.json');
-} catch (e) {
-    Config.debug = false;
-    Config.commandPrefix = '!';
-    Config.twitchNotify = [];
-    try {
-        if (fs.lstatSync('./config.json').isFile()) {
-            console.log('WARNING: config.json found but we couldn\'t read it!\n' + e.stack);
-        }
-    } catch (innerError) {
-        fs.writeFile('./config.json', JSON.stringify(Config, null, 2));
-    }
-}
-
-if (!Config.hasOwnProperty('commandPrefix')) {
-    Config.commandPrefix = '!';
-}
-
-var commands = {
-    'ping': {
-        description: 'Responds pong, useful for checking if bot is alive.',
-        process: function(bot, msg, suffix) {
-            msg.channel.sendMessage(msg.author + ' pong!');
-            if (suffix) {
-                msg.channel.sendMessage(' Note that !ping takes no arguments!');
-            }
-        }
-    },
-    'pong': {
-        description: 'Responds to Pakku, because only he is that stupid.',
-        process: function(bot, msg, suffix) {
-            msg.channel.sendMessage(msg.author + ' Idiot.');
-        }
-    }
-};
-
-function checkMessageForCommands(msg, isEdit) {
     // Check if message is a command
-    if (msg.author.id != bot.user.id && (msg.content.startsWith(Config.commandPrefix))) {
-        console.log('Treating ' + msg.content + ' from ' + msg.author + ' as command');
-        var cmdTxt = msg.content.split(' ')[0].substring(Config.commandPrefix.length);
-        var suffix = msg.content.substring(cmdTxt.length + Config.commandPrefix.length + 1);
-        if (msg.isMentioned(bot.user)) {
+    if (message.author.id !== discordClient.user.id && (message.content.startsWith(Config.commandPrefix))) {
+        logger.info(`Treating ${message.content} from ${message.author.username} as command`, 'discordClient');
+
+        let cmdTxt = message.content.split(' ')[0].substring(Config.commandPrefix.length);
+        let suffix = message.content.substring(cmdTxt.length + Config.commandPrefix.length + 1);
+
+        if (message.isMentioned(discordClient.user)) {
             try {
-                cmdTxt = msg.content.split(' ')[1];
-                suffix = msg.content.substring(bot.user.mention().length + cmdTxt.length + Config.commandPrefix.length + 1);
+                cmdTxt = message.content.split(' ')[1];
+                suffix = message.content.substring(discordClient.user.mention().length + cmdTxt.length + Config.commandPrefix.length + 1);
             } catch (e) {
-                msg.channel.sendMessage('Yes?');
+                message.channel.send('Yes?');
                 return;
             }
         }
-        var cmd = commands[cmdTxt];
 
-        if (cmdTxt === 'help') {
+        let cmd = Commands[cmdTxt];
+        if (cmdTxt == 'help') {
             // Help is special since it iterates over the other commands
             if (suffix) {
                 // give help for given arguments
-                var cmds = suffix.split(' ').filter(function(cmd) {
-                    return commands[cmd]
+                let cmds = suffix.split(' ').filter(cmd => {
+                    return Commands[cmd];
                 });
-                var info = '';
-                if (cmds.length > 0) {
-                    for (var i = 0; i < cmds.length; i++) {
-                        var currCmd = cmds[i];
-                        info += '**' + Config.commandPrefix + currCmd + '**';
-
-                        var usage = commands[currCmd].usage;
+                let info = '';
+                if(cmds.length > 0) {
+                    cmds.forEach(cmdName => {
+                        info += `** ${Config.commandPrefix}${cmdName} **`;
+                        let usage = Commands[cmdName].usage;
                         if (usage) {
-                            info += ' ' + usage;
+                            info += ` ${usage}`;
                         }
 
-                        var desc = commands[currCmd].description;
-                        if (desc instanceof Function) {
-                            desc = desc();
+                        let description = Commands[cmdName].description;
+                        if (description instanceof Function) {
+                            description = description();
                         }
-                        if (desc) {
-                            info += '\n\t' + desc;
+                        if (description) {
+                            info += `\n\t ${description}`;
                         }
-                        info += '\n'
-                    }
+                        info += '\n';
+                    });
                 } else {
-                    info = 'No **' + suffix + '** Command found'
+                    info = `No ** ${suffix} ** Command found`;
                 }
-                msg.channel.sendMessage(info);
+                message.channel.send(info);
             } else {
-                // Give help to all commands
-                msg.author.sendMessage('**Available Commands:**').then(function() {
-                    var batch = '';
-                    var sortedCommands = Object.keys(commands).sort();
+                // Give help for all commands
+                message.author.send('**Available Commands:**').then(() => {
+                    let batch = '';
+                    let sortedCommands = Object.keys(Commands).sort();
 
-                    for (var i in sortedCommands) {
-                        var currCmd = sortedCommands[i];
-                        var info = '**' + Config.commandPrefix + currCmd + '**';
-
-                        var usage = commands[currCmd].usage;
+                    sortedCommands.forEach(cmdName => {
+                        let info = `** ${Config.commandPrefix}${cmdName} **`;
+                        let usage = Commands[cmdName].usage;
                         if (usage) {
-                            info += ' ' + usage;
+                            info += ` ${usage}`;
                         }
 
-                        var desc = commands[currCmd].description;
-                        if (desc instanceof Function) {
-                            desc = desc();
+                        let description = Commands[cmdName].description;
+                        if (description instanceof Function) {
+                            description = description();
                         }
-                        if (desc) {
-                            info += '\n\t' + desc;
+                        if (description) {
+                            info += `\n\t ${description}`;
                         }
+                        info += '\n';
 
-                        var newBatch = batch + '\n' + info;
+                        let newBatch = `${batch}\n${info}`; 
                         if (newBatch.length > (1024 - 8)) {
-                            msg.author.sendMessage(batch);
+                            message.author.send(batch);
                             batch = info;
                         } else {
                             batch = newBatch;
                         }
-                    }
+                    });
 
                     if (batch.length > 0) {
-                        msg.author.sendMessage(batch);
+                        message.author.send(batch);
                     }
                 });
             }
         } else if (cmd) {
-            if (Permissions.checkPermission(msg.author, cmdTxt)) {
-                try {
-                    // Execute Command
-                    cmd.process(bot, msg, suffix, isEdit);
-                } catch (e) {
-                    var msgText = 'command ' + cmdTxt + ' failed.'
-                    if (Config.debug) {
-                        msgTxt = '\n' + e.stack;
-                    }
-                    console.log(e.stack);
-                    msg.channel.sendMessage(msgText);
-                }
+            if (Permissions.checkPermission(message.author, cmdTxt)) {
+                cmd.process(discordClient, message, suffix);
             } else {
-                msg.channel.sendMessage('You are not allowed to run ' + cmdTxt + '!');
+                message.channel.send(`You are not allowed to run ${cmdTxt}!`);
             }
         } else {
-            // Message is no valid command
-            if (msg.author == bot.user) {
-                return;
-            } else if (msg.author.id == '125987683318235136') {
-                msg.channel.send('Shut up ' + msg.author);
-            } else {
-                msg.channel.send('No valid Command. Try !help')
-            }
+            message.channel.send('No valid Command. Try !help');
         }
+    } else if (message.author.id !== discordClient.user.id) {
+        // Try watson conversation for analysis
     }
 }
-// Initialize Bot and set Eventlistener
-var bot = new Discord.Client();
 
-bot.on('ready', () => {
-    console.log('Logged in! Serving in ' + bot.guilds.array().length + ' servers');
-    require('./plugins.js').init();
-    console.log('type ' + Config.commandPrefix + 'help in Discord for Commandlist.');
-    bot.user.setGame('Chill fam.');
+// Log Bot in
+discordClient.login(AuthDetails.bot_token);
 
-    // Start non-interactive functions (no need for a command)
-    twitchNotifier.notifier(bot);
+discordClient.on('ready', () => {
+    logger.info(`Logged in! Serving in ${discordClient.guilds.array().length} servers`, 'discordClient');
+    logger.info(`type ${Config.commandPrefix}help in Discord for Commandlist.`, 'discordClient');
+    discordClient.user.setGame('Fortlul');
+
+    // Prepare 'standard' textChannel to send Message to
+    if (Config.guildName && Config.textChannel) {
+        let guild = discordClient.guilds.find('name', Config.guildName);
+        if (guild) {
+            let textChannel = guild.channels.find('name', Config.textChannel)
+            if (textChannel) {
+                logger.info('Add standard text channel for messages', 'discordClient');
+                discordClient._standardTextChannel = textChannel;
+            }
+        }
+    } else {
+        logger.info(`Client couldn't add a standard text channel, some functions may not work`, 'discordClient');
+    }
+
+    // Join voice channel, if guildName and joinChannel is given and listen for hotword
+    if (Config.guildName && Config.joinChannel) {
+        let guild = discordClient.guilds.find('name', Config.guildName);
+        if (guild) {
+            let voiceChannel = guild.channels.find('name', Config.joinChannel);
+            if (voiceChannel) {
+                voiceChannel.join()
+                    .then(connection => {
+                        // Configure connected voiceChannel
+                        discordClient._voiceChannel = voiceChannel;
+                        discordClient._voiceChannelConnection = connection;
+
+                        logger.info(`Client joined ${voiceChannel.name}@${guild.name}`, 'discordClient');
+                        if (discordClient._standardTextChannel) {
+                            //discordClient._standardTextChannel.send(`Client joined ${voiceChannel.name}@${guild.name}`);                        
+                        }
+
+                        // TextToSpeech.speak(discordClient._voiceChannelConnection, 'Hallo Jannik, kek');
+
+                        // Prepare EventListener for listening
+                        // let receiver = connection.createReceiver();
+                        // connection.on('speaking', (user, speaking) => {
+                        //     VoiceManager.handleSpeaking(receiver, user, speaking);
+                        // });
+                    })
+                    .catch(err => {
+                        logger.err(err, 'discordClient')
+                    });
+            } else {
+                logger.warn(`Client couldn't join the channel, joinChannel is not correct`, 'discordClient');            
+            }
+        } else {
+            logger.warn(`Client couldn't join a channel, guildName is not correct`, 'discordClient');
+        }
+    } else {
+        logger.info(`Client couldn't join a channel, please specify a guildName and joinChannel inside config.json`, 'discordClient');
+    }
 });
 
-bot.on('disconnected', function() {
-    console.log('Disconnected!');
+discordClient.on('message', handleMessage);
+discordClient.on('voiceStateUpdate', (oldUser, newUser) => {
+    let newUserChannel = newUser.voiceChannel
+    let oldUserChannel = oldUser.voiceChannel
+
+    console.log()
+
+    if (!oldUserChannel && newUserChannel && !newUser.user.bot) {
+        // New Member joined
+        if (discordClient._voiceChannel.id == newUser.voiceChannel.id) {
+            logger.debug(`${newUser.nickname || newUser.user.username} joined the channel ${newUser.voiceChannel.name}`, 'discordClient')
+            // User joined channel of Bot
+
+            // TextToSpeech.speak(discordClient._voiceChannelConnection, `Hallo ${newUser.user.username}`, 'de-DE_BirgitVoice');
+        }
+    } else if (!newUserChannel) {
+        // User left a channel
+    }
+})
+
+discordClient.on('disconnected', () => {
+    logger.info('Disconnected!', 'discordClient');
     process.exit(1);
 });
 
-bot.on('message', (msg) => checkMessageForCommands(msg, false));
-bot.on('messageUpdate', (oldMsg, newMsg) => checkMessageForCommands(newMsg, true));
-
-bot.on('presence', function(user, status, gameID) {
-    console.log(user + ' went ' + status);
+// Handle process exit
+process.on('exit', code => {
+    logger.info('Destroy discord Client', 'Process');
+    discordClient.destroy();
 });
-
-if (AuthDetails.bot_token) {
-    console.log('Logging in with token');
-    bot.login(AuthDetails.bot_token);
-}
-
-exports.addCommand = function(commandName, commandObject) {
-    try {
-        commands[commandName] = commandObject;
-    } catch (err) {
-        console.log(err);
-    }
-}

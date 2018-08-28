@@ -1,6 +1,0 @@
-{
-    "main": "twitchCMD.js",
-    "dependencies": {
-        "twitch-api": "^0.4.6"
-    }
-}
