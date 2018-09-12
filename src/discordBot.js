@@ -1,17 +1,15 @@
 const fs = require('fs');
+const Discord = require('discord.js');
+
 const logger = require('./lib/util/logger');
 const ClientManager = require('./lib/manager/ClientManager');
-const VoiceManager = require('./lib/manager/VoiceManager');
 
-const Discord = require('discord.js');
 const discordClient = new Discord.Client();
+const authDetails = ClientManager.authentication('./auth.json');
+const config = ClientManager.configure('./config.json');
+const permissions = ClientManager.permission('./permissions.json', ['eval', 'exit']);
+const commands = ClientManager.loadCommands();
 
-const AuthDetails = ClientManager.authentication('./auth.json');
-const Config = ClientManager.configure('./config.json');
-const Permissions = ClientManager.permission('./permissions.json', ['eval', 'exit']);
-const Commands = ClientManager.loadCommands();
-
-// const TextToSpeech = require('./lib/manager/TextToSpeechManager').getSharedInstance();
 
 // Message Handling
 let handleMessage = message => {
@@ -20,40 +18,39 @@ let handleMessage = message => {
     }
 
     // Check if message is a command
-    if (message.author.id !== discordClient.user.id && (message.content.startsWith(Config.commandPrefix))) {
+    if (message.author.id !== discordClient.user.id && (message.content.startsWith(config.commandPrefix))) {
         logger.info(`Treating ${message.content} from ${message.author.username} as command`, 'discordClient');
 
-        let cmdTxt = message.content.split(' ')[0].substring(Config.commandPrefix.length);
-        let suffix = message.content.substring(cmdTxt.length + Config.commandPrefix.length + 1);
-
+        let cmdTxt = message.content.split(' ')[0].substring(config.commandPrefix.length);
+        let suffix = message.content.substring(cmdTxt.length + config.commandPrefix.length + 1);
         if (message.isMentioned(discordClient.user)) {
             try {
                 cmdTxt = message.content.split(' ')[1];
-                suffix = message.content.substring(discordClient.user.mention().length + cmdTxt.length + Config.commandPrefix.length + 1);
+                suffix = message.content.substring(discordClient.user.mention().length + cmdTxt.length + config.commandPrefix.length + 1);
             } catch (e) {
                 message.channel.send('Yes?');
                 return;
             }
         }
 
-        let cmd = Commands[cmdTxt];
+        let cmd = commands[cmdTxt];
         if (cmdTxt == 'help') {
             // Help is special since it iterates over the other commands
             if (suffix) {
                 // give help for given arguments
                 let cmds = suffix.split(' ').filter(cmd => {
-                    return Commands[cmd];
+                    return commands[cmd];
                 });
                 let info = '';
                 if(cmds.length > 0) {
                     cmds.forEach(cmdName => {
-                        info += `** ${Config.commandPrefix}${cmdName} **`;
-                        let usage = Commands[cmdName].usage;
+                        info += `** ${config.commandPrefix}${cmdName} **`;
+                        let usage = commands[cmdName].usage;
                         if (usage) {
                             info += ` ${usage}`;
                         }
 
-                        let description = Commands[cmdName].description;
+                        let description = commands[cmdName].description;
                         if (description instanceof Function) {
                             description = description();
                         }
@@ -68,18 +65,18 @@ let handleMessage = message => {
                 message.channel.send(info);
             } else {
                 // Give help for all commands
-                message.author.send('**Available Commands:**').then(() => {
+                message.author.send('**Available commands:**').then(() => {
                     let batch = '';
-                    let sortedCommands = Object.keys(Commands).sort();
+                    let sortedCommands = Object.keys(commands).sort();
 
                     sortedCommands.forEach(cmdName => {
-                        let info = `** ${Config.commandPrefix}${cmdName} **`;
-                        let usage = Commands[cmdName].usage;
+                        let info = `** ${config.commandPrefix}${cmdName} **`;
+                        let usage = commands[cmdName].usage;
                         if (usage) {
                             info += ` ${usage}`;
                         }
 
-                        let description = Commands[cmdName].description;
+                        let description = commands[cmdName].description;
                         if (description instanceof Function) {
                             description = description();
                         }
@@ -103,8 +100,9 @@ let handleMessage = message => {
                 });
             }
         } else if (cmd) {
-            if (Permissions.checkPermission(message.author, cmdTxt)) {
-                cmd.process(discordClient, message, suffix);
+            if (permissions.checkPermission(message.author, cmdTxt)) {
+                const args = suffix.split(' ');
+                cmd.process(discordClient, message, args);
             } else {
                 message.channel.send(`You are not allowed to run ${cmdTxt}!`);
             }
@@ -117,18 +115,18 @@ let handleMessage = message => {
 }
 
 // Log Bot in
-discordClient.login(AuthDetails.bot_token);
+discordClient.login(authDetails.botToken);
 
 discordClient.on('ready', () => {
     logger.info(`Logged in! Serving in ${discordClient.guilds.array().length} servers`, 'discordClient');
-    logger.info(`type ${Config.commandPrefix}help in Discord for Commandlist.`, 'discordClient');
-    discordClient.user.setGame('Fortlul');
+    logger.info(`type ${config.commandPrefix}help in Discord for Commandlist.`, 'discordClient');
+    discordClient.user.setActivity('📈 Upgrade in progress 1%...');
 
     // Prepare 'standard' textChannel to send Message to
-    if (Config.guildName && Config.textChannel) {
-        let guild = discordClient.guilds.find('name', Config.guildName);
+    if (config.guildName && config.textChannel) {
+        let guild = discordClient.guilds.find(guild => guild.name === config.guildName);
         if (guild) {
-            let textChannel = guild.channels.find('name', Config.textChannel)
+            let textChannel = guild.channels.find(channels => channels.name === config.textChannel)
             if (textChannel) {
                 logger.info('Add standard text channel for messages', 'discordClient');
                 discordClient._standardTextChannel = textChannel;
@@ -139,10 +137,10 @@ discordClient.on('ready', () => {
     }
 
     // Join voice channel, if guildName and joinChannel is given and listen for hotword
-    if (Config.guildName && Config.joinChannel) {
-        let guild = discordClient.guilds.find('name', Config.guildName);
+    if (config.guildName && config.joinChannel) {
+        let guild = discordClient.guilds.find(guild => guild.name === config.guildName);
         if (guild) {
-            let voiceChannel = guild.channels.find('name', Config.joinChannel);
+            let voiceChannel = guild.channels.find(channels => channels.name === config.joinChannel);
             if (voiceChannel) {
                 voiceChannel.join()
                     .then(connection => {
@@ -151,17 +149,9 @@ discordClient.on('ready', () => {
                         discordClient._voiceChannelConnection = connection;
 
                         logger.info(`Client joined ${voiceChannel.name}@${guild.name}`, 'discordClient');
-                        if (discordClient._standardTextChannel) {
-                            //discordClient._standardTextChannel.send(`Client joined ${voiceChannel.name}@${guild.name}`);                        
-                        }
-
-                        // TextToSpeech.speak(discordClient._voiceChannelConnection, 'Hallo Jannik, kek');
-
-                        // Prepare EventListener for listening
-                        // let receiver = connection.createReceiver();
-                        // connection.on('speaking', (user, speaking) => {
-                        //     VoiceManager.handleSpeaking(receiver, user, speaking);
-                        // });
+                        // if (discordClient._standardTextChannel) {
+                        //     discordClient._standardTextChannel.send(`Client joined ${voiceChannel.name}@${guild.name}`);                        
+                        // }
                     })
                     .catch(err => {
                         logger.err(err, 'discordClient')
@@ -182,15 +172,11 @@ discordClient.on('voiceStateUpdate', (oldUser, newUser) => {
     let newUserChannel = newUser.voiceChannel
     let oldUserChannel = oldUser.voiceChannel
 
-    console.log()
-
     if (!oldUserChannel && newUserChannel && !newUser.user.bot) {
         // New Member joined
         if (discordClient._voiceChannel.id == newUser.voiceChannel.id) {
             logger.debug(`${newUser.nickname || newUser.user.username} joined the channel ${newUser.voiceChannel.name}`, 'discordClient')
-            // User joined channel of Bot
-
-            // TextToSpeech.speak(discordClient._voiceChannelConnection, `Hallo ${newUser.user.username}`, 'de-DE_BirgitVoice');
+            // Do something if needed (currently not anymore)
         }
     } else if (!newUserChannel) {
         // User left a channel

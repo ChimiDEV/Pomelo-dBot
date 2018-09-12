@@ -1,10 +1,10 @@
 {
   "name": "pomelo-bot",
-  "version": "0.0.2",
-  "description": "simple discord bot",
+  "version": "0.0.3",
+  "description": "discord bot for my discord server",
   "main": "discordBot.js",
   "scripts": {
-    "start": "node discordBot.js"
+    "start": "node ./src/discordBot.js"
   },
   "repository": {
     "type": "git",
@@ -22,8 +22,15 @@
   },
   "homepage": "https://github.com/ChimiDEV/Pomelo-dBot#readme",
   "dependencies": {
+    "bufferutil": "^4.0.0",
+    "cheerio": "^1.0.0-rc.2",
+    "convert-units": "^2.3.4",
     "discord.js": "^11.2.1",
-    "node-opus": "^0.2.7",
-    "watson-developer-cloud": "^3.0.3"
+    "erlpack": "github:discordapp/erlpack",
+    "node-opus": "^0.3.0",
+    "pokedex": "^1.0.0",
+    "pokedex-api": "^1.1.1",
+    "pokemon": "^1.2.3",
+    "request": "^2.88.0"
   }
 }

@@ -4,17 +4,17 @@ const logger = require('../util/logger');
 
 class ClientManager {
     static authentication(authPath) {
-        let AuthDetails;
+        let authDetails;
         // Read Authenticatins Details
         try {
             // align path with root path
-            AuthDetails = require(path.join('../../', authPath));
+            authDetails = require(path.join('../../', authPath));
         } catch (e) {
             logger.err('Please provide a authentication json file with a bot token.', 'Authentication');
             process.exit(0);
         }
 
-        return AuthDetails;
+        return authDetails;
     }
 
     static configure(configPath) {
@@ -43,41 +43,41 @@ class ClientManager {
 
     static permission(permissionPath, dangerousCommands) {
         // Permission Handling
-        let Permissions = {};
+        let permissions = {};
 
         try {
-            Permissions = require(path.join('../../', permissionPath));
+            permissions = require(path.join('../../', permissionPath));
         } catch (e) {
-            Permissions.global = {};
-            Permissions.users = {};
+            permissions.global = {};
+            permissions.users = {};
 
             dangerousCommands.forEach(cmd => {
-                if (!Permissions.global.hasOwnProperty(cmd)) {
-                    Permissions.global[cmd] = false;
+                if (!permissions.global.hasOwnProperty(cmd)) {
+                    permissions.global[cmd] = false;
                 }
             });
 
-            fs.writeFile('./permissions.json', JSON.stringify(Permissions, null, 2), () => {
+            fs.writeFile('./permissions.json', JSON.stringify(permissions, null, 2), () => {
                 logger.info('Wrote new Permission File', 'Permission');
             });
         }
 
-        Permissions.checkPermission = (user, permission) => {
+        permissions.checkPermission = (user, permission) => {
             try {
                 let allowed = true;
                 try {
-                    if (Permissions.global.hasOwnProperty(permission)) {
-                        allowed = Permissions.global[permission] === true;
+                    if (permissions.global.hasOwnProperty(permission)) {
+                        allowed = permissions.global[permission] === true;
                     }
                 } catch (err) {
                     logger.err(err, 'Permission');
                 }
 
                 try {
-                    if (typeof Permissions.users[user.id] == 'undefined') return allowed;
+                    if (typeof permissions.users[user.id] == 'undefined') return allowed;
                 
-                    if (Permissions.users[user.id].hasOwnProperty(permission)) {
-                        allowed = Permissions.users[user.id][permission] === true;
+                    if (permissions.users[user.id].hasOwnProperty(permission)) {
+                        allowed = permissions.users[user.id][permission] === true;
                     }
                 } catch (err) {
                     logger.err(err, 'Permission');
@@ -90,11 +90,11 @@ class ClientManager {
             return false;
         }
 
-        return Permissions;
+        return permissions;
     }
 
     static loadCommands() {
-        let commands = require('../../loadModules.js')();
+        let commands = require('../../loadCommands')();
         logger.debug(commands, 'Loaded Commands');
         return commands;
     }

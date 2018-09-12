@@ -2,7 +2,7 @@
   "debug": true,
   "commandPrefix": "!",
   "guildName": "#Pomelo",
-  "joinChannel": "\\_ounge²",
+  "joinChannel": "\\_ounge",
   "textChannel": "general",
   "timeoutTTS": 1000
 }
