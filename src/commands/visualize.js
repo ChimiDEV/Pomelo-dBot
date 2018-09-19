@@ -1,9 +1,10 @@
 const request = require('request');
 
 const visualizeCommand = {
-	name: 'visualize',
+	name: 'Visualize Color',
+	triggers: ['visualize', 'color'],
 	usage: '<hex or rgb>',
-	description: 'Visualize any hex or rgb color',
+	description: 'Visualize any hex or rgb color.',
 	process(client, msg, args) {
 		let reqURL;
 		let imageURL;

@@ -85,12 +85,13 @@ const sound = {
 };
 
 const soundCommand = {
-	name: 'sound',
+	name: 'Soundboard',
+	triggers: ['sound'],
 	usage: '<sound>',
 	description() {
-		let str = 'Currently available sounds:\n';
+		let str = 'Currently available sounds:';
 		Object.keys(sound).forEach(soundName => {
-			str += `\t\t${soundName}\n`;
+			str += `\n\t\t${soundName}`;
 		});
 		return str;
 	},

@@ -10,6 +10,7 @@ const config = ClientManager.configure('./config.json');
 const permissions = ClientManager.permission('./permissions.json', ['eval', 'exit']);
 const commands = ClientManager.loadCommands();
 
+let voiceList = {};
 
 // Message Handling
 let handleMessage = message => {
@@ -44,10 +45,22 @@ let handleMessage = message => {
                 let info = '';
                 if(cmds.length > 0) {
                     cmds.forEach(cmdName => {
-                        info += `** ${config.commandPrefix}${cmdName} **`;
-                        let usage = commands[cmdName].usage;
+                        const currCmd = commands[cmdName];
+                        info = `---------------\n**${currCmd.name}**\n`;
+                        
+                        let trigger = `\`\`\``;
+                        if (Array.isArray(currCmd.triggers)) {
+                            currCmd.triggers.forEach(t => {
+                                trigger += `${config.commandPrefix}${t}\n`;
+                            })
+                        } else {
+                            trigger += `${config.commandPrefix}${currCmd.triggers}\n`;
+                        }
+                        info += `${trigger}\`\`\``;
+
+                        const usage = commands[cmdName].usage;
                         if (usage) {
-                            info += ` ${usage}`;
+                            info += `\`Arguments: ${usage}\`\n`;
                         }
 
                         let description = commands[cmdName].description;
@@ -55,9 +68,10 @@ let handleMessage = message => {
                             description = description();
                         }
                         if (description) {
-                            info += `\n\t ${description}`;
+                            info += `${description}\n`;
                         }
-                        info += '\n';
+
+                        info += '---------------\n\n';
                     });
                 } else {
                     info = `No ** ${suffix} ** Command found`;
@@ -68,12 +82,34 @@ let handleMessage = message => {
                 message.author.send('**Available commands:**').then(() => {
                     let batch = '';
                     let sortedCommands = Object.keys(commands).sort();
+                    let commandSeen = {};
+                    let filteredCommands = sortedCommands.filter(cmdName => {
+                        const currCmd = commands[cmdName];
+                        if(commandSeen[currCmd.name]) {
+                            return false;
+                        } else {
+                            commandSeen[currCmd.name] = true;
+                            return true;
+                        }
+                    });
 
-                    sortedCommands.forEach(cmdName => {
-                        let info = `** ${config.commandPrefix}${cmdName} **`;
-                        let usage = commands[cmdName].usage;
+                    filteredCommands.forEach(cmdName => {
+                        const currCmd = commands[cmdName];
+                        let info = `---------------\n**${currCmd.name}**\n`;
+                        
+                        let trigger = `\`\`\``;
+                        if (Array.isArray(currCmd.triggers)) {
+                            currCmd.triggers.forEach(t => {
+                                trigger += `${config.commandPrefix}${t}\n`;
+                            })
+                        } else {
+                            trigger += `${config.commandPrefix}${currCmd.triggers}\n`;
+                        }
+                        info += `${trigger}\`\`\``;
+
+                        const usage = commands[cmdName].usage;
                         if (usage) {
-                            info += ` ${usage}`;
+                            info += `\`Arguments: ${usage}\`\n`;
                         }
 
                         let description = commands[cmdName].description;
@@ -81,11 +117,11 @@ let handleMessage = message => {
                             description = description();
                         }
                         if (description) {
-                            info += `\n\t ${description}`;
+                            info += `${description}\n`;
                         }
-                        info += '\n';
 
-                        let newBatch = `${batch}\n${info}`; 
+                        info += '---------------\n\n';
+                        const newBatch = `${batch}${info}`; 
                         if (newBatch.length > (1024 - 8)) {
                             message.author.send(batch);
                             batch = info;
@@ -101,7 +137,7 @@ let handleMessage = message => {
             }
         } else if (cmd) {
             if (permissions.checkPermission(message.author, cmdTxt)) {
-                const args = suffix.split(' ');
+                const args = suffix.split(' ').filter(arg => arg !== '');
                 cmd.process(discordClient, message, args);
             } else {
                 message.channel.send(`You are not allowed to run ${cmdTxt}!`);
@@ -176,10 +212,12 @@ discordClient.on('voiceStateUpdate', (oldUser, newUser) => {
         // New Member joined
         if (discordClient._voiceChannel.id == newUser.voiceChannel.id) {
             logger.debug(`${newUser.nickname || newUser.user.username} joined the channel ${newUser.voiceChannel.name}`, 'discordClient')
+            voiceList[newUser.user.username] = true;
             // Do something if needed (currently not anymore)
         }
     } else if (!newUserChannel) {
         // User left a channel
+        voiceList[newUser.user.username] = false;
     }
 })
 

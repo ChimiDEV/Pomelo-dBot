@@ -10,7 +10,13 @@ module.exports = () => {
     files.forEach(command => {
         let cmd = require(`./commands/${command}`);
         logger.debug(cmd.module, `Load command - ${cmd.name}`);
-        cmds[cmd.name] = cmd;
+        if(Array.isArray(cmd.triggers)) {
+            cmd.triggers.forEach(trigger => {
+                cmds[trigger] = cmd;
+            });
+        } else {
+            cmds[cmd.triggers] = cmd;
+        }
     });
 
     // Exporting cmds

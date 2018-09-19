@@ -1,6 +1,7 @@
 const exitCommand = {
-	name: 'exit',
-	description: 'Command to log out bot',
+	name: 'Exit',
+	triggers: ['exit'],
+	description: 'Command to log out bot.',
 	process(client, msg, args) {
 		process.exit(0);
 	}

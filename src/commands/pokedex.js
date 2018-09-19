@@ -10,8 +10,9 @@ const pokedex = new Pokedex({
 });
 
 const pokedexCommand = {
-	name: 'pokedex',
-	description: 'Get the data entry of a specified pokemon',
+  name: 'Pokedex',
+	triggers: ['pokedex'],
+	description: 'Get the data entry of a specified pokemon.',
 	usage: '<pokemon name>',
 	async process(client, msg, args) {
 		const pivotPokemon = args[0];

@@ -1,6 +1,7 @@
 const pingCommand = {
-	name: 'ping',
-	description: 'First command for testing purpose',
+	name: 'Ping',
+	triggers: 'ping',
+	description: 'First command for testing purpose.',
 	process(client, msg, args) {
 		msg.channel.send(msg.author + ' pong!');
 		if (suffix) {
