@@ -3,13 +3,16 @@ const request = require('request');
 const cheerio = require('cheerio');
 const convert = require('convert-units')
 const PokeSpriter = require('pokedex');
-const pokeSpriter = new PokeSpriter();
 const Pokedex = require('pokedex-api');
+
+const Command = require('../lib/Command');
+
+const pokeSpriter = new PokeSpriter();
 const pokedex = new Pokedex({
   userAgent: 'PomeloBot (https://github.com/ChimiDEV/Pomelo-dBot, v0.0.3)',
 });
 
-const pokedexCommand = {
+const pokedexCommand = new Command({
   name: 'Pokedex',
 	triggers: ['pokedex'],
 	description: 'Get the data entry of a specified pokemon.',
@@ -83,7 +86,7 @@ const pokedexCommand = {
       msg.channel.send('Pokemon not found');
     }
 	}
-};
+});
 
 function getPokemonID(pokeName) {
 	// Anonymous function

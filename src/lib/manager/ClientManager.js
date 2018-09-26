@@ -18,13 +18,13 @@ class ClientManager {
     }
 
     static configure(configPath) {
-        let Config;
+        let config;
         // Generate a config.json if not existing
         try {
-            Config = require(path.join('../../', configPath));
+            config = require(path.join('../../', configPath));
         } catch (e) {
-            Config.debug = true;
-            Config.commandPrefix = '!';
+            config.debug = true;
+            config.commandPrefix = '!';
             try {
                 if (fs.lstatSync('./config.json').isFile()) {
                     logger.warn('WARNING: config.json found but we couldn\'t read it!\n' + e.stack, 'Configuration');
@@ -38,7 +38,7 @@ class ClientManager {
             }
         }
 
-        return Config;
+        return config;
     }
 
     static permission(permissionPath, dangerousCommands) {
@@ -95,7 +95,6 @@ class ClientManager {
 
     static loadCommands() {
         let commands = require('../../loadCommands')();
-        logger.debug(commands, 'Loaded Commands');
         return commands;
     }
 }

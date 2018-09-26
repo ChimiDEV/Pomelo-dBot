@@ -1,6 +1,7 @@
 const request = require('request');
+const Command = require('../lib/Command');
 
-const visualizeCommand = {
+const visualizeCommand = new Command({
 	name: 'Visualize Color',
 	triggers: ['visualize', 'color'],
 	usage: '<hex or rgb>',
@@ -52,6 +53,6 @@ const visualizeCommand = {
 			});
 		});
 	}
-};
+});
 
 module.exports = visualizeCommand;

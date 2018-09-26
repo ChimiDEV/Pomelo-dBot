@@ -1,4 +1,4 @@
-const logger = require('../lib/util/logger');
+const Command = require('../lib/Command');
 
 const sound = {
 	guteidee: './sounds/guteIdee.mp3',
@@ -81,10 +81,12 @@ const sound = {
 	litgetup: './sounds/litGetUp.mp3',
 	litbestfriend: './sounds/litBestFriend.mp3',
 	litrightnow: './sounds/litRightNow.mp3',
-	elconnecto: './sounds/elconnecto.mp3'
+	elconnecto: './sounds/elconnecto.mp3',
+	ussr: './sounds/nationalanthem.mp3',
+	trapshot: './sounds/trapshot.mp3'
 };
 
-const soundCommand = {
+const soundCommand = new Command({
 	name: 'Soundboard',
 	triggers: ['sound'],
 	usage: '<sound>',
@@ -96,6 +98,7 @@ const soundCommand = {
 		return str;
 	},
 	async process(client, msg, args) {
+		const logger = client._logger;
 		let soundName = args[0] != '' ? args[0] : null;
 
 		if (!soundName || !sound[soundName]) {
@@ -107,6 +110,8 @@ const soundCommand = {
 		if (soundName === 'random') {
 			const soundKeys = Object.keys(sound);
 			soundName = soundKeys[(soundKeys.length * Math.random()) << 0];
+			logger.debug(`Random Sound is ${soundName}`, 'Soundboard');
+			msg.channel.send(`${msg.author} Random Sound: ${soundName}`);
 		}
 
 		let voiceConnection;
@@ -118,9 +123,14 @@ const soundCommand = {
 		}
 
 		const audio = sound[soundName];
+
+		if (voiceConnection.dispatcher) {
+			logger.debug('Sound already playing');
+			return;
+		}
 		const dispatcher = voiceConnection.playFile(audio);
 	}
-};
+});
 
 function resolveVoiceConnection(client, msg) {
 	const voiceConnection = client.voiceConnections.get(msg.guild.id);

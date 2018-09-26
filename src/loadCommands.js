@@ -1,15 +1,19 @@
 const fs = require('fs')
-const logger = require('./lib/util/logger');
+
+// 'Mock' Client to get logger functions
+const tmp = {};
+require('./lib/util/logger')(tmp);
+const logger = tmp._logger;
 
 // load all commands in an object
 module.exports = () => {
     let cmds = {};
 
-    let files = fs.readdirSync('./src/commands');
+    const files = fs.readdirSync('./src/commands');
 
     files.forEach(command => {
         let cmd = require(`./commands/${command}`);
-        logger.debug(cmd.module, `Load command - ${cmd.name}`);
+        logger.debug(`Loaded`, `Command - ${cmd.name}`);
         if(Array.isArray(cmd.triggers)) {
             cmd.triggers.forEach(trigger => {
                 cmds[trigger] = cmd;
@@ -20,5 +24,6 @@ module.exports = () => {
     });
 
     // Exporting cmds
+    logger.debug(cmds, 'Loaded Commands');
     return cmds;
 }

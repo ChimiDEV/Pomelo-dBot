@@ -22,12 +22,12 @@
   },
   "homepage": "https://github.com/ChimiDEV/Pomelo-dBot#readme",
   "dependencies": {
+    "bad-words": "^1.6.4",
     "better-sqlite-pool": "^0.1.2",
     "bufferutil": "^4.0.0",
     "cheerio": "^1.0.0-rc.2",
     "convert-units": "^2.3.4",
     "discord.js": "^11.2.1",
-    "enmap": "^4.2.4",
     "erlpack": "github:discordapp/erlpack",
     "node-opus": "^0.3.0",
     "pokedex": "^1.0.0",
