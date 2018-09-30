@@ -119,7 +119,7 @@ const soundCommand = new Command({
 		try {
 			voiceConnection = await resolveVoiceConnection(client, msg);
 		} catch (error) {
-			logger.err(err, 'SoundBoard');
+			logger.err(err, 'Soundboard');
 			return msg.channel.send(err);
 		}
 
@@ -129,9 +129,23 @@ const soundCommand = new Command({
 			logger.debug('Sound already playing');
 			return;
 		}
+
+		logger.debug(client._playing, 'Client Playing');
+
 		const dispatcher = voiceConnection.playFile(audio);
+		client._playing = true;
+
+		client.setTimeout(() => {
+			logger.debug('Ending Dispatcher', 'Soundboard');
+			dispatcher.end();
+		}, 25000);
+
 		dispatcher.on('error', err => {
 			logger.error(err, 'Soundboard')
+		});
+		dispatcher.on('end', () => {
+			logger.debug('Dispatcher end', 'Soundboard');
+			client._playing = false;
 		});
 	}
 });
