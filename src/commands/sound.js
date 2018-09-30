@@ -83,7 +83,8 @@ const sound = {
 	litrightnow: './sounds/litRightNow.mp3',
 	elconnecto: './sounds/elconnecto.mp3',
 	ussr: './sounds/nationalanthem.mp3',
-	trapshot: './sounds/trapshot.mp3'
+	trapshot: './sounds/trapshot.mp3',
+	jannikmoan: './sounds/jannikMoan.mp3'
 };
 
 const soundCommand = new Command({
@@ -129,6 +130,9 @@ const soundCommand = new Command({
 			return;
 		}
 		const dispatcher = voiceConnection.playFile(audio);
+		dispatcher.on('error', err => {
+			logger.error(err, 'Soundboard')
+		});
 	}
 });
 

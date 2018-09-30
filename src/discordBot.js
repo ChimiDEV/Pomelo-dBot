@@ -27,11 +27,11 @@ eventFiles.forEach(file => {
     discordClient.on(eventName, event.bind(null, discordClient));
 });
 
-// Log Bot in
-discordClient.login(authDetails.botToken);
-
 // Handle process exit
 process.on('exit', code => {
     discordClient.destroy();
     discordClient._logger.info('Destroy discord Client', 'Process');
 });
+
+// Log Bot in
+discordClient.login(authDetails.botToken);
