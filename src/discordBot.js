@@ -3,7 +3,8 @@ const Discord = require('discord.js');
 const ClientManager = require('./lib/manager/ClientManager');
 
 const discordClient = new Discord.Client();
-const authDetails = ClientManager.authentication('./auth.json');
+discordClient._authDetails = ClientManager.authentication('./auth.json');
+
 
 // Creates a _util object for some shared functionality, also adds _logger to discordClient
 require('./lib/util/utility')(discordClient);
@@ -16,7 +17,7 @@ monitorFiles.forEach(file => {
     discordClient._monitors = [];
     discordClient._monitors.push(require(`./monitors/${file}`));
     discordClient._logger.debug('Loaded', `Monitor - ${file.split('.')[0]}`);
-})
+});
 
 const eventFiles = fs.readdirSync('./src/events');
 eventFiles.forEach(file => {
@@ -34,4 +35,4 @@ process.on('exit', code => {
 });
 
 // Log Bot in
-discordClient.login(authDetails.botToken);
+discordClient.login(discordClient._authDetails.botToken);

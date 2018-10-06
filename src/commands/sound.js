@@ -135,13 +135,9 @@ const soundCommand = new Command({
 		const dispatcher = voiceConnection.playFile(audio);
 		client._playing = true;
 
-		client.setTimeout(() => {
-			logger.debug('Ending Dispatcher', 'Soundboard');
-			dispatcher.end();
-		}, 25000);
 
 		dispatcher.on('error', err => {
-			logger.error(err, 'Soundboard')
+			logger.err(err, 'Soundboard')
 		});
 		dispatcher.on('end', () => {
 			logger.debug('Dispatcher end', 'Soundboard');
